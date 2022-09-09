@@ -2,6 +2,7 @@ package me.petrolingus.unn.psr.opengl;
 
 import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.core.Particle;
+import me.petrolingus.unn.psr.core.ParticleData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
@@ -32,11 +33,14 @@ public class Renderer {
 
     private void initialize() {
 
-        algorithm = new Algorithm(140, width, 0.2);
+        int size = 8;
+
+        algorithm = new Algorithm(100, 8, width, 10);
+        algorithm.start(10_000);
 
         GL.createCapabilities();
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL11.glPointSize(30);
+        GL11.glPointSize(8);
         buffer = BufferUtils.createByteBuffer(width * height * 4);
     }
 
@@ -48,6 +52,8 @@ public class Renderer {
 
         double FPS_TARGET = 120;
         double FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
+
+        int currentFrame = 0;
 
         long frameStart = System.currentTimeMillis();
 
@@ -61,12 +67,15 @@ public class Renderer {
 
                 // Drawing all particles
                 GL11.glBegin(GL11.GL_POINTS);
-                for (Particle particle : algorithm.getParticles()) {
-                    double x = 1 - particle.x / 360;
-                    double y = 1 - particle.y / 360;
+                for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
+                    double x = 1 - particle.x() / (0.5 * width);
+                    double y = 1 - particle.y() / (0.5 * height);
                     GL11.glVertex2d(x, y);
                 }
                 GL11.glEnd();
+
+                currentFrame++;
+                currentFrame = currentFrame % algorithm.countOfSteps;
 
                 long start = System.nanoTime();
                 GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
@@ -78,7 +87,7 @@ public class Renderer {
             }
 
             // Math
-            algorithm.run();
+//            algorithm.run();
 
             long fpsTimerStop = System.currentTimeMillis();
             if (fpsTimerStop - fpsTimerStart > 5000) {

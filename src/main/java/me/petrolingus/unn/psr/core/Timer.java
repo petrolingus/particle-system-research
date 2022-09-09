@@ -20,4 +20,10 @@ public class Timer {
         return false;
     }
 
+    public static void measure(String name) {
+        long now = System.currentTimeMillis();
+        System.out.println(name + " takes " + (now - map.get(name)) + " ms");
+        map.put(name, now);
+    }
+
 }

@@ -26,11 +26,17 @@ public class Algorithm {
     private final double dt2 = dt * dt;
     /////////////////////////////////////////////////////
 
-    List<Particle> particles = new ArrayList<>();
+    private double c;
 
-    public Algorithm(int particleCount, double cellSize, double maxSpeed) {
+    public int countOfSteps;
+
+    List<Particle> particles = new ArrayList<>();
+    List<List<ParticleData>> particleData = new ArrayList<>();
+
+    public Algorithm(int particleCount, double particleSize, double cellSize, double maxSpeed) {
         this.particleCount = particleCount;
-        this.particleSize = cellSize / 30.0;
+//        this.particleSize = cellSize / 30.0;
+        this.particleSize = particleSize;
         this.maxSpeed = maxSpeed;
 
         this.a = particleSize;
@@ -38,6 +44,8 @@ public class Algorithm {
         this.width = cellSize;
         this.height = cellSize;
         this.D = particleSize * 0.0001;
+
+        this.c = 12 * D * a6;
         initialize();
     }
 
@@ -121,7 +129,6 @@ public class Algorithm {
         }
         for (int i = 0; i < particleCount; i++) {
             Particle a = particles.get(i);
-            double c = 12 * D * a6;
             double ax = 0;
             double ay = 0;
             for (int j = 0; j < particleCount; j++) {
@@ -130,9 +137,11 @@ public class Algorithm {
                 double dx = a.x - b.x;
                 double dy = a.y - b.y;
                 double r = getSquareDistance(dx, dy);
-                double c2 = (a6 / Math.pow(r, 6)) - 1.0;
-                ax += c2 * (dx / Math.pow(r, 8));
-                ay += c2 * (dy / Math.pow(r, 8));
+                double c1 = r * r;
+                double c2 = (a6 / (c1 * r)) - 1.0;
+                double c3 = c1 * c1;
+                ax += c2 * (dx / c3);
+                ay += c2 * (dy / c3);
             }
             a.ax = c * ax;
             a.ay = c * ay;
@@ -142,20 +151,20 @@ public class Algorithm {
             a.vy += 0.5 * a.ay * dt;
         }
 
-        if (Timer.isCome("LOG_SUM_ENERGY", TimeUnit.SECONDS.toMillis(1))) {
-            double sum = 0;
-            for (Particle a : particles) {
-                sum += Math.sqrt(a.vx * a.vx + a.vy * a.vy) / 2.0;
-            }
-            System.out.println(sum);
-        }
+//        if (Timer.isCome("LOG_SUM_ENERGY", TimeUnit.SECONDS.toMillis(1))) {
+//            double sum = 0;
+//            for (Particle a : particles) {
+//                sum += Math.sqrt(a.vx * a.vx + a.vy * a.vy) / 2.0;
+//            }
+//            System.out.println(sum);
+//        }
 
     }
 
     public double getSquareDistance(double dx, double dy) {
         dx = (Math.abs(dx) > 0.5 * width) ? dx - width * Math.signum(dx) : dx;
         dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
-        return Math.sqrt(dx * dx + dy * dy);
+        return dx * dx + dy * dy;
     }
 
     public List<Particle> getParticles() {
@@ -168,5 +177,23 @@ public class Algorithm {
         y = (y < 0) ? (y + height) : y;
         y = (y > height) ? (y - height) : y;
         return new double[] {x, y};
+    }
+
+    public void start(int countOfSteps) {
+        this.countOfSteps = countOfSteps;
+        Timer.start("GENERATION_ANIMATION");
+        for (int i = 0; i < countOfSteps; i++) {
+            List<ParticleData> data = new ArrayList<>(particleCount);
+            for (Particle particle : particles) {
+                data.add(new ParticleData(particle.x, particle.y));
+            }
+            particleData.add(data);
+            run();
+        }
+        Timer.measure("GENERATION_ANIMATION");
+    }
+
+    public List<ParticleData> getParticleData(int index) {
+        return particleData.get(index);
     }
 }
