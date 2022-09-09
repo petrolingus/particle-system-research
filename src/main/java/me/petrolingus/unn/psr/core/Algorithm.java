@@ -17,6 +17,8 @@ public class Algorithm {
     private final double dt2;
     private final double c;
 
+    private double beginKineticEnergy = -1;
+
     private static boolean done = false;
 
     List<Particle> particles = new ArrayList<>();
@@ -33,7 +35,7 @@ public class Algorithm {
         this.particleSize = particleSize;
         this.maxSpeed = maxSpeed;
 
-        double d = particleSize * 0.0001;
+        double d = particleSize * 1e-8;
         this.a6 = Math.pow(particleSize, 6);
         this.dt = dt;
         this.dt2 = dt * dt;
@@ -141,6 +143,9 @@ public class Algorithm {
         for (Particle a : particles) {
             averageKineticEnergy += Math.sqrt(a.vx * a.vx + a.vy * a.vy) / 2.0;
         }
+        if (beginKineticEnergy == -1) {
+            beginKineticEnergy = averageKineticEnergy;
+        }
         return averageKineticEnergy;
     }
 
@@ -153,7 +158,7 @@ public class Algorithm {
     }
 
     public void start(int countOfSteps) {
-        this.countOfSteps = countOfSteps;
+        Algorithm.countOfSteps = countOfSteps;
         Timer.start("GENERATION_ANIMATION");
         for (int i = 0; i < countOfSteps; i++) {
             List<ParticleData> data = new ArrayList<>(particleCount);
@@ -161,7 +166,11 @@ public class Algorithm {
                 data.add(new ParticleData(particle.x, particle.y));
             }
             particleData.add(data);
-            averageKineticEnergyList.add(getAverageKineticEnergy());
+            double currentKineticEnergy = getAverageKineticEnergy();
+            averageKineticEnergyList.add(currentKineticEnergy);
+            if (currentKineticEnergy / beginKineticEnergy > 50) {
+                break;
+            }
             run();
         }
         Timer.measure("GENERATION_ANIMATION");

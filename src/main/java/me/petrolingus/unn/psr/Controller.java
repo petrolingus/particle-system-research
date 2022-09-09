@@ -14,8 +14,10 @@ import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.opengl.Window;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Controller {
@@ -26,8 +28,12 @@ public class Controller {
 
     public LineChart<Number, Number> chart;
 
-    public void initialize() {
+    private static volatile Window window;
+    private static WritableImage img;
+    private final List<Thread> thread = new ArrayList<>();
+    private ExecutorService executorService;
 
+    public void initialize() {
         final int width = (int) canvas.getWidth();
         final int height = (int) canvas.getHeight();
 
@@ -35,18 +41,40 @@ public class Controller {
         context.setFill(Color.BLACK);
         context.fillRect(0, 0, width, height);
 
-        Window window = new Window(width, height);
-        new Thread(window::run).start();
+        onCleanButton();
+    }
 
-        WritableImage img = new WritableImage(width, height);
+    public void onCalculateButton() {
+        thread.forEach(executorService::submit);
+    }
 
-        new Thread(() -> {
+    public void onCleanButton() {
+        if (window != null) {
+            window.kill();
+            executorService.shutdown();
+            thread.clear();
+        }
+        createThreads();
+        executorService = Executors.newFixedThreadPool(4);
+    }
 
+    public void createThreads() {
+
+        final int width = (int) canvas.getWidth();
+        final int height = (int) canvas.getHeight();
+
+        GraphicsContext context = canvas.getGraphicsContext2D();
+
+        window = new Window(width, height);
+        Thread thread0 = new Thread(window::run);
+
+        img = new WritableImage(width, height);
+
+        Thread thread1 = new Thread(() -> {
             PixelWriter pw = img.getPixelWriter();
             int bpp = 4;
             int[] pixels = new int[width * height];
-
-            while (true) {
+            while (!window.isKilled()) {
                 if (!window.isInitialize()) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(10);
@@ -55,8 +83,10 @@ public class Controller {
                     }
                     continue;
                 }
-
                 ByteBuffer buffer = window.getBuffer();
+                if (window.isKilled()) {
+                    break;
+                }
                 for (int y = 0; y < width; y++) {
                     for (int x = 0; x < height; x++) {
                         int i = (x + (width * y)) * bpp;
@@ -67,13 +97,13 @@ public class Controller {
                     }
                 }
                 pw.setPixels(0, 0, width, height, PixelFormat.getIntArgbInstance(), pixels, 0, width);
+
             }
-        }).start();
+        });
 
-        new Thread(() -> {
+        Thread thread2 = new Thread(() -> {
             long start = System.nanoTime();
-            while (true) {
-
+            while (!window.isKilled()) {
                 if (!window.isInitialize()) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(10);
@@ -86,13 +116,14 @@ public class Controller {
                 long stop = System.nanoTime();
                 if (stop - start > 16_000_000) {
                     start = stop;
-                    context.drawImage(img, 0, 0);
+                    Platform.runLater(() -> {
+                        context.drawImage(img, 0, 0);
+                    });
                 }
             }
-        }).start();
+        });
 
-        new Thread(() -> {
-
+        Thread thread3 = new Thread(() -> {
             while (!Algorithm.isDone()) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
@@ -109,10 +140,18 @@ public class Controller {
                     int currentFrame = i * step;
                     series.getData().add(new XYChart.Data<>(currentFrame, averageKineticEnergyList.get(currentFrame)));
                 }
+                if (chart.getData() != null) {
+                    chart.getData().clear();
+                }
                 chart.getData().add(series);
             });
+        });
 
-        }).start();
-
+        thread.add(thread0);
+        thread.add(thread1);
+        thread.add(thread2);
+        thread.add(thread3);
     }
+
+
 }

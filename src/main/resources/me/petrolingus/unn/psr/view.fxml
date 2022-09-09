@@ -73,9 +73,10 @@
                               </VBox>
                            </content>
                         </TitledPane>
-                        <HBox>
+                        <HBox spacing="4.0">
                            <children>
-                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Calculate Simulation" HBox.hgrow="ALWAYS" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCalculateButton" text="Calculate Simulation" HBox.hgrow="ALWAYS" />
+                              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCleanButton" text="Clear Simulation" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                         <HBox prefHeight="100.0" prefWidth="200.0" />

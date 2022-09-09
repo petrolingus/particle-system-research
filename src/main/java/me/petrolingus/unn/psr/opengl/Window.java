@@ -16,6 +16,8 @@ public class Window {
 
     private boolean initialized = false;
 
+    private boolean killed = true;
+
     private long window;
 
     private Renderer renderer;
@@ -63,6 +65,8 @@ public class Window {
 
     public void run() {
 
+        this.killed = false;
+
         initialize();
         try {
             renderer.loop();
@@ -77,6 +81,15 @@ public class Window {
         // Terminate GLFW and free the error callback
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+    }
+
+    public void kill() {
+        renderer.kill();
+        killed = true;
+    }
+
+    public boolean isKilled() {
+        return killed;
     }
 
     public boolean isInitialize() {

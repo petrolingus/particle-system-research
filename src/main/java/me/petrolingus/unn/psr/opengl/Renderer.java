@@ -1,16 +1,12 @@
 package me.petrolingus.unn.psr.opengl;
 
 import me.petrolingus.unn.psr.core.Algorithm;
-import me.petrolingus.unn.psr.core.Particle;
 import me.petrolingus.unn.psr.core.ParticleData;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Renderer {
 
@@ -23,6 +19,8 @@ public class Renderer {
     private ByteBuffer buffer;
 
     private Algorithm algorithm;
+
+    private boolean running = true;
 
     public Renderer(int width, int height, long window) {
         this.width = width;
@@ -53,7 +51,7 @@ public class Renderer {
 
         long frameStart = System.currentTimeMillis();
 
-        while (!GLFW.glfwWindowShouldClose(window)) {
+        while (running) {
 
             long frameStop = System.currentTimeMillis();
             if (frameStop - frameStart > FRAME_TIME_TARGET) {
@@ -80,6 +78,10 @@ public class Renderer {
             }
 
         }
+    }
+
+    void kill() {
+        running = false;
     }
 
     ByteBuffer getBuffer() {
