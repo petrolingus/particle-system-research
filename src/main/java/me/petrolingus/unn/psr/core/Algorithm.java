@@ -6,45 +6,25 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Algorithm {
 
-    private final double width;
-    private final double height;
-    private final int particleCount;
-    private final double particleSize;
-    private final double maxSpeed;
-
-    private final double a6;
-    private final double dt;
-    private final double dt2;
-    private final double c;
-
     private double beginKineticEnergy = -1;
 
     private static boolean done = false;
 
     List<Particle> particles = new ArrayList<>();
 
-    public static int countOfSteps;
-
     public static List<Double> averageKineticEnergyList = new ArrayList<>();
     List<List<ParticleData>> particleData = new ArrayList<>();
 
-    public Algorithm(int particleCount, double particleSize, double cellSize, double maxSpeed, double dt) {
-        this.width = cellSize;
-        this.height = cellSize;
-        this.particleCount = particleCount;
-        this.particleSize = particleSize;
-        this.maxSpeed = maxSpeed;
-
-        double d = particleSize * 1e-8;
-        this.a6 = Math.pow(particleSize, 6);
-        this.dt = dt;
-        this.dt2 = dt * dt;
-        this.c = 12 * d * a6;
-
+    public Algorithm() {
         initialize();
     }
 
     private void initialize() {
+
+        int particleCount = Configuration.particleCount;
+        double particleSize = Configuration.particleSize;
+        int width = Configuration.Lx;
+        int height = Configuration.Ly;
 
         for (int i = 0; i < particleCount; i++) {
             double x;
@@ -66,6 +46,7 @@ public class Algorithm {
                     break;
                 }
             }
+            double maxSpeed = Configuration.maxSpeed;
             double speed = ThreadLocalRandom.current().nextDouble(-maxSpeed, maxSpeed);
             double direction = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
             double vx = speed * Math.cos(direction);
@@ -92,6 +73,12 @@ public class Algorithm {
     }
 
     public void run() {
+
+        double dt = Configuration.dt;
+        double dt2 = Configuration.dt2;
+        int particleCount = Configuration.particleCount;
+        double a6 = Configuration.a6;
+        double c = Configuration.c;
 
         for (Particle a : particles) {
             double newX = a.x + a.vx * dt + 0.5 * a.ax * dt2;
@@ -133,6 +120,8 @@ public class Algorithm {
     }
 
     public double getSquareDistance(double dx, double dy) {
+        double width = Configuration.Lx;
+        double height = Configuration.Ly;
         dx = (Math.abs(dx) > 0.5 * width) ? dx - width * Math.signum(dx) : dx;
         dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
         return dx * dx + dy * dy;
@@ -150,6 +139,8 @@ public class Algorithm {
     }
 
     public double[] periodic(double x, double y) {
+        double width = Configuration.Lx;
+        double height = Configuration.Ly;
         x = (x < 0) ? (x + width) : x;
         x = (x > width) ? (x - width) : x;
         y = (y < 0) ? (y + height) : y;
@@ -157,10 +148,11 @@ public class Algorithm {
         return new double[]{x, y};
     }
 
-    public void start(int countOfSteps) {
-        Algorithm.countOfSteps = countOfSteps;
+    public void start() {
+        int particleCount = Configuration.particleCount;
+        int steps = Configuration.countOfSteps;
         Timer.start("GENERATION_ANIMATION");
-        for (int i = 0; i < countOfSteps; i++) {
+        for (int i = 0; i < steps; i++) {
             List<ParticleData> data = new ArrayList<>(particleCount);
             for (Particle particle : particles) {
                 data.add(new ParticleData(particle.x, particle.y));

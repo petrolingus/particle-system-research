@@ -1,6 +1,7 @@
 package me.petrolingus.unn.psr.opengl;
 
 import me.petrolingus.unn.psr.core.Algorithm;
+import me.petrolingus.unn.psr.core.Configuration;
 import me.petrolingus.unn.psr.core.ParticleData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
@@ -31,10 +32,8 @@ public class Renderer {
 
     private void initialize() {
 
-        int size = 8;
-
-        algorithm = new Algorithm(100, 8, width, 10, 0.02);
-        algorithm.start(100_000);
+        algorithm = new Algorithm();
+        algorithm.start();
 
         GL.createCapabilities();
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -69,7 +68,7 @@ public class Renderer {
                 GL11.glEnd();
 
                 currentFrame++;
-                currentFrame = currentFrame % algorithm.countOfSteps;
+                currentFrame = currentFrame % Configuration.countOfSteps;
 
                 GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 
