@@ -2,10 +2,10 @@ package me.petrolingus.unn.psr.core;
 
 public interface Configuration {
 
-    int Lx = 700;
-    int Ly = 700;
+    int Lx = 720;
+    int Ly = 720;
     int particleCount = 100;
-    double particleSize = 8; // diameter
+    double particleSize = Lx / 130.0; // diameter
     double maxSpeed = 10;
     double dt = 0.02;
     int countOfSteps = 100_000;

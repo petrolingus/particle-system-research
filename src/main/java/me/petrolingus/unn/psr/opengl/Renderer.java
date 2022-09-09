@@ -35,9 +35,11 @@ public class Renderer {
         algorithm = new Algorithm();
         algorithm.start();
 
+        float pointSize = (float) (width * Configuration.particleSize / Configuration.Lx);
+
         GL.createCapabilities();
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL11.glPointSize(8);
+        GL11.glPointSize(pointSize);
         buffer = BufferUtils.createByteBuffer(width * height * 4);
     }
 
@@ -61,8 +63,8 @@ public class Renderer {
                 // Drawing all particles
                 GL11.glBegin(GL11.GL_POINTS);
                 for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
-                    double x = 1 - particle.x() / (0.5 * width);
-                    double y = 1 - particle.y() / (0.5 * height);
+                    double x = 1 - particle.x() / (0.5 * Configuration.Lx);
+                    double y = 1 - particle.y() / (0.5 * Configuration.Ly);
                     GL11.glVertex2d(x, y);
                 }
                 GL11.glEnd();
