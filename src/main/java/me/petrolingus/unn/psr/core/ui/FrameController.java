@@ -1,6 +1,5 @@
 package me.petrolingus.unn.psr.core.ui;
 
-import me.petrolingus.unn.psr.core.Configuration;
 import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
 
 import java.util.concurrent.TimeUnit;
