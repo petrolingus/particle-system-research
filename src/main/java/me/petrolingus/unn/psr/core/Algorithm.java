@@ -1,51 +1,44 @@
 package me.petrolingus.unn.psr.core;
 
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class Algorithm {
 
+    private final double width;
+    private final double height;
     private final int particleCount;
-
     private final double particleSize;
-
     private final double maxSpeed;
 
-    private double width = 1.0;
+    private final double a6;
+    private final double dt;
+    private final double dt2;
+    private final double c;
 
-    private double height = 1.0;
-
-    //////////////////////////////////////////////////////
-    private double D = 0.000001;
-    private double a = width / 30.0;
-    private double a6 = Math.pow(a, 6);
-    private final double dt = 0.02;
-    private final double dt2 = dt * dt;
-    /////////////////////////////////////////////////////
-
-    private double c;
-
-    public int countOfSteps;
+    private static boolean done = false;
 
     List<Particle> particles = new ArrayList<>();
+
+    public static int countOfSteps;
+
+    public static List<Double> averageKineticEnergyList = new ArrayList<>();
     List<List<ParticleData>> particleData = new ArrayList<>();
 
-    public Algorithm(int particleCount, double particleSize, double cellSize, double maxSpeed) {
+    public Algorithm(int particleCount, double particleSize, double cellSize, double maxSpeed, double dt) {
+        this.width = cellSize;
+        this.height = cellSize;
         this.particleCount = particleCount;
-//        this.particleSize = cellSize / 30.0;
         this.particleSize = particleSize;
         this.maxSpeed = maxSpeed;
 
-        this.a = particleSize;
-        this.a6 = Math.pow(a, 6);
-        this.width = cellSize;
-        this.height = cellSize;
-        this.D = particleSize * 0.0001;
+        double d = particleSize * 0.0001;
+        this.a6 = Math.pow(particleSize, 6);
+        this.dt = dt;
+        this.dt2 = dt * dt;
+        this.c = 12 * d * a6;
 
-        this.c = 12 * D * a6;
         initialize();
     }
 
@@ -71,26 +64,10 @@ public class Algorithm {
                     break;
                 }
             }
-
             double speed = ThreadLocalRandom.current().nextDouble(-maxSpeed, maxSpeed);
             double direction = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
             double vx = speed * Math.cos(direction);
             double vy = speed * Math.sin(direction);
-
-            // Test #1
-//            x = 360 + 100 * Math.pow(-1, i);
-//            y = 400;
-//            vx = 1 * Math.pow(-1, i);
-//            vy = 0;
-
-            // Test #2
-//            x = 400;
-//            y = 360 + 100 * Math.pow(-1, i + 1);
-//            vx = 0;
-//            vy = 1 * Math.pow(-1, i);
-
-            System.out.println(particles.size()+1 + " of " + particleCount);
-
             particles.add(new Particle(x, y, vx, vy));
         }
         System.out.printf("Generate %d particles\n", particleCount);
@@ -113,8 +90,6 @@ public class Algorithm {
     }
 
     public void run() {
-//        particles.forEach(Particle::move);
-//        particles.forEach(Particle::recalculateVelocity);
 
         for (Particle a : particles) {
             double newX = a.x + a.vx * dt + 0.5 * a.ax * dt2;
@@ -123,10 +98,12 @@ public class Algorithm {
             a.x = periodic[0];
             a.y = periodic[1];
         }
+
         for (Particle a : particles) {
             a.vx += 0.5 * a.ax * dt;
             a.vy += 0.5 * a.ay * dt;
         }
+
         for (int i = 0; i < particleCount; i++) {
             Particle a = particles.get(i);
             double ax = 0;
@@ -146,19 +123,11 @@ public class Algorithm {
             a.ax = c * ax;
             a.ay = c * ay;
         }
+
         for (Particle a : particles) {
             a.vx += 0.5 * a.ax * dt;
             a.vy += 0.5 * a.ay * dt;
         }
-
-//        if (Timer.isCome("LOG_SUM_ENERGY", TimeUnit.SECONDS.toMillis(1))) {
-//            double sum = 0;
-//            for (Particle a : particles) {
-//                sum += Math.sqrt(a.vx * a.vx + a.vy * a.vy) / 2.0;
-//            }
-//            System.out.println(sum);
-//        }
-
     }
 
     public double getSquareDistance(double dx, double dy) {
@@ -167,8 +136,12 @@ public class Algorithm {
         return dx * dx + dy * dy;
     }
 
-    public List<Particle> getParticles() {
-        return particles;
+    public double getAverageKineticEnergy() {
+        double averageKineticEnergy = 0;
+        for (Particle a : particles) {
+            averageKineticEnergy += Math.sqrt(a.vx * a.vx + a.vy * a.vy) / 2.0;
+        }
+        return averageKineticEnergy;
     }
 
     public double[] periodic(double x, double y) {
@@ -176,7 +149,7 @@ public class Algorithm {
         x = (x > width) ? (x - width) : x;
         y = (y < 0) ? (y + height) : y;
         y = (y > height) ? (y - height) : y;
-        return new double[] {x, y};
+        return new double[]{x, y};
     }
 
     public void start(int countOfSteps) {
@@ -188,12 +161,22 @@ public class Algorithm {
                 data.add(new ParticleData(particle.x, particle.y));
             }
             particleData.add(data);
+            averageKineticEnergyList.add(getAverageKineticEnergy());
             run();
         }
         Timer.measure("GENERATION_ANIMATION");
+        done = true;
     }
 
     public List<ParticleData> getParticleData(int index) {
         return particleData.get(index);
+    }
+
+    public static List<Double> getAverageKineticEnergyList() {
+        return averageKineticEnergyList;
+    }
+
+    public static boolean isDone() {
+        return done;
     }
 }

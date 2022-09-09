@@ -35,8 +35,8 @@ public class Renderer {
 
         int size = 8;
 
-        algorithm = new Algorithm(100, 8, width, 10);
-        algorithm.start(10_000);
+        algorithm = new Algorithm(100, 8, width, 10, 0.02);
+        algorithm.start(100_000);
 
         GL.createCapabilities();
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

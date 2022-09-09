@@ -1,19 +1,30 @@
 package me.petrolingus.unn.psr;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.opengl.Window;
 
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Controller {
 
     public Canvas canvas;
+
+    public Label iterationLabel;
+
+    public LineChart<Number, Number> chart;
 
     public void initialize() {
 
@@ -78,6 +89,29 @@ public class Controller {
                     context.drawImage(img, 0, 0);
                 }
             }
+        }).start();
+
+        new Thread(() -> {
+
+            while (!Algorithm.isDone()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Platform.runLater(() -> {
+                List<Double> averageKineticEnergyList = Algorithm.getAverageKineticEnergyList();
+                XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                int maxPoints = 1000;
+                int step = averageKineticEnergyList.size() / maxPoints;
+                for (int i = 0; i < maxPoints; i += step) {
+                    int currentFrame = i * step;
+                    series.getData().add(new XYChart.Data<>(currentFrame, averageKineticEnergyList.get(currentFrame)));
+                }
+                chart.getData().add(series);
+            });
+
         }).start();
 
     }
