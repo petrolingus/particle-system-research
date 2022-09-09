@@ -21,13 +21,14 @@ public class FrameController implements Runnable {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                continue;
             }
             FPS_TARGET = UiConfiguration.frameRate;
             FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
             long frameStop = System.currentTimeMillis();
             if (frameStop - frameStart > FRAME_TIME_TARGET && UiConfiguration.autoplay) {
                 RuntimeConfiguration.currentFrame++;
-                RuntimeConfiguration.currentFrame = RuntimeConfiguration.currentFrame % Configuration.countOfSteps;
+                RuntimeConfiguration.currentFrame = RuntimeConfiguration.currentFrame % RuntimeConfiguration.maxFrame;
                 frameStart = frameStop;
             }
         }

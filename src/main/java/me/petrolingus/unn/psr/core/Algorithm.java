@@ -1,5 +1,7 @@
 package me.petrolingus.unn.psr.core;
 
+import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -161,6 +163,7 @@ public class Algorithm {
             double currentKineticEnergy = getAverageKineticEnergy();
             averageKineticEnergyList.add(currentKineticEnergy);
             if (currentKineticEnergy / beginKineticEnergy > 50) {
+                RuntimeConfiguration.maxFrame = i;
                 break;
             }
             run();

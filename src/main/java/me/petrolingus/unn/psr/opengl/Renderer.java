@@ -48,7 +48,6 @@ public class Renderer {
         double FPS_TARGET = 120;
         double FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
 
-        RuntimeConfiguration.maxFrame = Configuration.countOfSteps;
         RuntimeConfiguration.running = true;
 
         long frameStart = System.currentTimeMillis();
@@ -62,13 +61,21 @@ public class Renderer {
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
                 // Drawing all particles
-                GL11.glBegin(GL11.GL_POINTS);
-                for (ParticleData particle : algorithm.getParticleData(RuntimeConfiguration.currentFrame)) {
-                    double x = 1 - particle.x() / (0.5 * Configuration.Lx);
-                    double y = 1 - particle.y() / (0.5 * Configuration.Ly);
-                    GL11.glVertex2d(x, y);
+                try {
+                    GL11.glBegin(GL11.GL_POINTS);
+                    int currentFrame = RuntimeConfiguration.currentFrame;
+                    if (currentFrame < 0 || currentFrame > Configuration.countOfSteps) {
+                        System.err.println("WTF!");
+                    }
+                    for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
+                        double x = 1 - particle.x() / (0.5 * Configuration.Lx);
+                        double y = 1 - particle.y() / (0.5 * Configuration.Ly);
+                        GL11.glVertex2d(x, y);
+                    }
+                    GL11.glEnd();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                GL11.glEnd();
 
                 GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 
