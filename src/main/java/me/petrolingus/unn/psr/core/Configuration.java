@@ -11,7 +11,7 @@ public interface Configuration {
     int countOfSteps = 100_000;
 
     double D = particleSize * 1e-8;
-    double a6 = Math.pow(particleSize, 6);;
+    double a6 = Math.pow(particleSize, 6);
     double dt2 = dt * dt;
     double c = 12 * D * a6;
 
