@@ -46,10 +46,6 @@ public class Renderer {
 
     void loop() throws Exception {
 
-        List<Long> times = new ArrayList<>();
-
-        long fpsTimerStart = System.currentTimeMillis();
-
         double FPS_TARGET = 120;
         double FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
 
@@ -77,28 +73,12 @@ public class Renderer {
                 currentFrame++;
                 currentFrame = currentFrame % algorithm.countOfSteps;
 
-                long start = System.nanoTime();
                 GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-                long stop = System.nanoTime();
-                times.add(stop - start);
 
                 frameStart = frameStop;
 
             }
 
-            // Math
-//            algorithm.run();
-
-            long fpsTimerStop = System.currentTimeMillis();
-            if (fpsTimerStop - fpsTimerStart > 5000) {
-                fpsTimerStart = fpsTimerStop;
-                double average = times.stream().mapToDouble(Long::doubleValue).average().orElse(-1);
-                long mean = times.stream().sorted().toList().get(times.size() / 2);
-                average /= 1_000_000;
-                mean /= 1_000_000;
-                System.out.println("Frame time(avg): " + average + " ms");
-                System.out.println("Frame time(mean): " + mean + " ms");
-            }
         }
     }
 
