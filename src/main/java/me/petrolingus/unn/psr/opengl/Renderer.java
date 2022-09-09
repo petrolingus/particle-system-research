@@ -1,0 +1,99 @@
+package me.petrolingus.unn.psr.opengl;
+
+import me.petrolingus.unn.psr.core.Algorithm;
+import me.petrolingus.unn.psr.core.Particle;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Renderer {
+
+    private final int width;
+
+    private final int height;
+
+    private final long window;
+
+    private ByteBuffer buffer;
+
+    private Algorithm algorithm;
+
+    public Renderer(int width, int height, long window) {
+        this.width = width;
+        this.height = height;
+        this.window = window;
+        initialize();
+    }
+
+    private void initialize() {
+
+        algorithm = new Algorithm(140, width, 0.2);
+
+        GL.createCapabilities();
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GL11.glPointSize(30);
+        buffer = BufferUtils.createByteBuffer(width * height * 4);
+    }
+
+    void loop() throws Exception {
+
+        List<Long> times = new ArrayList<>();
+
+        long fpsTimerStart = System.currentTimeMillis();
+
+        double FPS_TARGET = 120;
+        double FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
+
+        long frameStart = System.currentTimeMillis();
+
+        while (!GLFW.glfwWindowShouldClose(window)) {
+
+            long frameStop = System.currentTimeMillis();
+            if (frameStop - frameStart > FRAME_TIME_TARGET) {
+
+                // Render
+                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+
+                // Drawing all particles
+                GL11.glBegin(GL11.GL_POINTS);
+                for (Particle particle : algorithm.getParticles()) {
+                    double x = 1 - particle.x / 360;
+                    double y = 1 - particle.y / 360;
+                    GL11.glVertex2d(x, y);
+                }
+                GL11.glEnd();
+
+                long start = System.nanoTime();
+                GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+                long stop = System.nanoTime();
+                times.add(stop - start);
+
+                frameStart = frameStop;
+
+            }
+
+            // Math
+            algorithm.run();
+
+            long fpsTimerStop = System.currentTimeMillis();
+            if (fpsTimerStop - fpsTimerStart > 5000) {
+                fpsTimerStart = fpsTimerStop;
+                double average = times.stream().mapToDouble(Long::doubleValue).average().orElse(-1);
+                long mean = times.stream().sorted().toList().get(times.size() / 2);
+                average /= 1_000_000;
+                mean /= 1_000_000;
+                System.out.println("Frame time(avg): " + average + " ms");
+                System.out.println("Frame time(mean): " + mean + " ms");
+            }
+        }
+    }
+
+    ByteBuffer getBuffer() {
+        return buffer.asReadOnlyBuffer();
+    }
+}
