@@ -24,7 +24,8 @@ dependencies {
 }
 
 application {
-    mainClass = 'me.petrolingus.unn.psr.ParticleSystemResearchApplication'
+//    mainClass = 'me.petrolingus.unn.psr.ParticleSystemResearchApplication'
+    mainClass = 'me.petrolingus.unn.test.Main'
 }
 
 javafx {
