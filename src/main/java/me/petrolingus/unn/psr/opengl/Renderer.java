@@ -35,11 +35,13 @@ public class Renderer {
         algorithm = new Algorithm();
         algorithm.start();
 
-        float pointSize = (float) (width * Configuration.particleSize / Configuration.WIDTH);
+//        float pointSize = (float) (width * Configuration.particleSize / Configuration.WIDTH);
 
         GL.createCapabilities();
+//        GL11.glViewport(0, 0, 720, 720);
+        GL11.glDisable (GL11.GL_POINT_SMOOTH);
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL11.glPointSize(pointSize);
+        GL11.glPointSize(400);
         buffer = BufferUtils.createByteBuffer(width * height * 4);
     }
 
@@ -57,14 +59,24 @@ public class Renderer {
             if (frameStop - frameStart > FRAME_TIME_TARGET) {
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
                 try {
-                    GL11.glBegin(GL11.GL_POINTS);
                     int currentFrame = RuntimeConfiguration.currentFrame;
                     for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
                         double x = 1 - particle.x() / (0.5 * Configuration.WIDTH);
                         double y = 1 - particle.y() / (0.5 * Configuration.HEIGHT);
-                        GL11.glVertex2d(x, y);
+                        int n = 64;
+                        double h = 2.0 * Math.PI / (n - 1);
+                        double pointSize = 4 * Configuration.SIGMA / Configuration.WIDTH;
+                        GL11.glBegin(GL11.GL_POLYGON);
+                        for (int i = 0; i < n; i++) {
+                            double phi = i  * h;
+                            double xx = pointSize * Math.cos(phi);
+                            double yy = pointSize * Math.sin(phi);
+                            GL11.glVertex2d(xx + x, yy + y);
+                        }
+                        GL11.glEnd();
+
                     }
-                    GL11.glEnd();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
