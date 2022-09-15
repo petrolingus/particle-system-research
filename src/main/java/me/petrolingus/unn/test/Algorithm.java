@@ -1,7 +1,5 @@
 package me.petrolingus.unn.test;
 
-import me.petrolingus.unn.psr.core.Configuration;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
