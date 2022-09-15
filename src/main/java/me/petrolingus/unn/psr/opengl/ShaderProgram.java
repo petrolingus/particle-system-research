@@ -1,7 +1,10 @@
 package me.petrolingus.unn.psr.opengl;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
+import org.lwjgl.system.MemoryStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,15 +93,15 @@ public class ShaderProgram {
         GL30.glUniform1f(uniforms.get(uniformName), value);
     }
 
-//    public void setUniform(String uniformName, Vector3f value) {
-//        GL30.glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
-//    }
-//
-//    public void setUniform(String uniformName, Matrix4f value) {
-//        try (MemoryStack stack = MemoryStack.stackPush()) {
-//            GL30.glUniformMatrix4fv(uniforms.get(uniformName), false, value.get(stack.mallocFloat(16)));
-//        }
-//    }
+    public void setUniform(String uniformName, Vector3f value) {
+        GL30.glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
+    }
+
+    public void setUniform(String uniformName, Matrix4f value) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            GL30.glUniformMatrix4fv(uniforms.get(uniformName), false, value.get(stack.mallocFloat(16)));
+        }
+    }
 
     public void setUniform(String uniformName, float[] value) {
         glUniform1fv(uniforms.get(uniformName), value);

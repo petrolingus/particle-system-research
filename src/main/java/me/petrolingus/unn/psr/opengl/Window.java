@@ -22,6 +22,11 @@ public class Window {
 
     private Renderer renderer;
 
+    public static void main(String[] args) {
+        Window window1 = new Window(720, 720);
+        window1.run();
+    }
+
     public Window(int width, int height) {
         this.width = width;
         this.height = height;
@@ -37,7 +42,7 @@ public class Window {
 
         // Configure GLFW
         GLFW.glfwDefaultWindowHints();
-        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+//        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
@@ -57,7 +62,7 @@ public class Window {
 
         GLFW.glfwMakeContextCurrent(window);
         GLFW.glfwSwapInterval(1);
-        GLFW.glfwHideWindow(window);
+//        GLFW.glfwHideWindow(window);
 
         this.renderer = new Renderer(width, height, window);
         this.initialized = true;

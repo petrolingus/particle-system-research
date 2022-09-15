@@ -1,15 +1,16 @@
 #version 330
 
 layout (location=0) in vec3 position;
+layout (location=1) in vec2 texures;
 
-layout(std140, binding = 0) uniform Example {
-    float x;
-};
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
 
-out float particlePos;
+out vec2 foobar;
 
 void main()
 {
-    gl_Position = vec4(position, 1.0);
-    particlePos = x;
+    vec4 mvPos = viewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * mvPos;
+    foobar = texures;
 }

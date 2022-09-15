@@ -21,6 +21,8 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl-glfw::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl-opengl::natives-windows"
+
+    implementation "org.joml:joml:1.10.5"
 }
 
 application {

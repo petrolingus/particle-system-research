@@ -4,8 +4,8 @@ public interface Configuration {
 
     int Lx = 720;
     int Ly = 720;
-    int particleCount = 100;
-    double particleSize = Lx / 130.0; // diameter
+    int particleCount = 50;
+    double particleSize = Lx / 30.0; // diameter
     double maxSpeed = 10;
     double dt = 0.02;
     int countOfSteps = 100_000;
