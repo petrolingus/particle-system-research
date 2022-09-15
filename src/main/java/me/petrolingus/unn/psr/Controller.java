@@ -48,6 +48,9 @@ public class Controller {
 
     public LineChart<Number, Number> chart;
 
+    public Button calculateSimulationButton;
+    public Button clearSimulationButton;
+
     private static volatile Window window;
     private static WritableImage img;
     private final List<Thread> thread = new ArrayList<>();
@@ -66,6 +69,8 @@ public class Controller {
     }
 
     public void initialize() {
+
+        clearSimulationButton.disableProperty().bind(calculateSimulationButton.disableProperty().not());
 
         setConfig();
 
@@ -118,12 +123,14 @@ public class Controller {
     }
 
     public void onCalculateButton() {
+        calculateSimulationButton.setDisable(true);
         setConfig();
         thread.forEach(executorService::submit);
         onFrameButton();
     }
 
     public void onCleanButton() {
+        calculateSimulationButton.setDisable(false);
         RuntimeConfiguration.running = false;
         RuntimeConfiguration.currentFrame = 0;
         if (window != null) {

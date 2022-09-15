@@ -39,8 +39,8 @@ public class Window {
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-        GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+        GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 16);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 16);
 
         // Create the window
         window = GLFW.glfwCreateWindow(width, height, "LWJGL Window", MemoryUtil.NULL, MemoryUtil.NULL);
