@@ -52,6 +52,7 @@ public class Controller {
             List<List<Particle>> run = algorithm.run();
 
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName("Kinetic Energy");
             for (int i = 0; i < run.size(); i++) {
                 double y = 0;
                 for (Particle p : run.get(i)) {

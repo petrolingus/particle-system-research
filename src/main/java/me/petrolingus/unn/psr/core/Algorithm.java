@@ -23,10 +23,10 @@ public class Algorithm {
 
     private void initialize() {
 
-        int particleCount = Configuration.particleCount;
+        int particleCount = Configuration.N;
         double particleSize = Configuration.particleSize;
-        int width = Configuration.Lx;
-        int height = Configuration.Ly;
+        int width = Configuration.WIDTH;
+        int height = Configuration.HEIGHT;
 
         for (int i = 0; i < particleCount; i++) {
             double x;
@@ -48,7 +48,7 @@ public class Algorithm {
                     break;
                 }
             }
-            double maxSpeed = Configuration.maxSpeed;
+            double maxSpeed = Configuration.MAX_SPEED;
             double speed = ThreadLocalRandom.current().nextDouble(-maxSpeed, maxSpeed);
             double direction = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
             double vx = speed * Math.cos(direction);
@@ -76,11 +76,11 @@ public class Algorithm {
 
     public void run() {
 
-        double dt = Configuration.dt;
-        double dt2 = Configuration.dt2;
-        int particleCount = Configuration.particleCount;
-        double a6 = Configuration.a6;
-        double c = Configuration.c;
+        double dt = Configuration.DT;
+        double dt2 = Configuration.DT2;
+        int particleCount = Configuration.N;
+        double a6 = Configuration.SIGMA6;
+        double c = Configuration.CONSTANT;
 
         for (Particle a : particles) {
             double newX = a.x + a.vx * dt + 0.5 * a.ax * dt2;
@@ -122,8 +122,8 @@ public class Algorithm {
     }
 
     public double getSquareDistance(double dx, double dy) {
-        double width = Configuration.Lx;
-        double height = Configuration.Ly;
+        double width = Configuration.WIDTH;
+        double height = Configuration.HEIGHT;
         dx = (Math.abs(dx) > 0.5 * width) ? dx - width * Math.signum(dx) : dx;
         dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
         return dx * dx + dy * dy;
@@ -141,8 +141,8 @@ public class Algorithm {
     }
 
     public double[] periodic(double x, double y) {
-        double width = Configuration.Lx;
-        double height = Configuration.Ly;
+        double width = Configuration.WIDTH;
+        double height = Configuration.HEIGHT;
         x = (x < 0) ? (x + width) : x;
         x = (x > width) ? (x - width) : x;
         y = (y < 0) ? (y + height) : y;
@@ -151,8 +151,8 @@ public class Algorithm {
     }
 
     public void start() {
-        int particleCount = Configuration.particleCount;
-        int steps = Configuration.countOfSteps;
+        int particleCount = Configuration.N;
+        int steps = Configuration.STEPS;
         Timer.start("GENERATION_ANIMATION");
         for (int i = 0; i < steps; i++) {
             List<ParticleData> data = new ArrayList<>(particleCount);
@@ -162,10 +162,7 @@ public class Algorithm {
             particleData.add(data);
             double currentKineticEnergy = getAverageKineticEnergy();
             averageKineticEnergyList.add(currentKineticEnergy);
-            if (currentKineticEnergy / beginKineticEnergy > 50) {
-                RuntimeConfiguration.maxFrame = i;
-                break;
-            }
+            RuntimeConfiguration.maxFrame = steps;
             run();
         }
         Timer.measure("GENERATION_ANIMATION");

@@ -35,7 +35,7 @@ public class Renderer {
         algorithm = new Algorithm();
         algorithm.start();
 
-        float pointSize = (float) (width * Configuration.particleSize / Configuration.Lx);
+        float pointSize = (float) (width * Configuration.particleSize / Configuration.WIDTH);
 
         GL.createCapabilities();
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -64,12 +64,12 @@ public class Renderer {
                 try {
                     GL11.glBegin(GL11.GL_POINTS);
                     int currentFrame = RuntimeConfiguration.currentFrame;
-                    if (currentFrame < 0 || currentFrame > Configuration.countOfSteps) {
+                    if (currentFrame < 0 || currentFrame > Configuration.STEPS) {
                         System.err.println("WTF!");
                     }
                     for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
-                        double x = 1 - particle.x() / (0.5 * Configuration.Lx);
-                        double y = 1 - particle.y() / (0.5 * Configuration.Ly);
+                        double x = 1 - particle.x() / (0.5 * Configuration.WIDTH);
+                        double y = 1 - particle.y() / (0.5 * Configuration.HEIGHT);
                         GL11.glVertex2d(x, y);
                     }
                     GL11.glEnd();

@@ -6,19 +6,17 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 import me.petrolingus.unn.psr.core.Algorithm;
+import me.petrolingus.unn.psr.core.Configuration;
 import me.petrolingus.unn.psr.core.ui.FrameController;
 import me.petrolingus.unn.psr.core.ui.UiConfiguration;
 import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
@@ -27,11 +25,22 @@ import me.petrolingus.unn.psr.opengl.Window;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Controller {
+
+    public TextField widthField;
+    public TextField heightField;
+    public TextField nField;
+    public TextField maxSpeedField;
+    public TextField sigmaField;
+    public TextField epsilonField;
+    public TextField tauField;
+    public TextField dtField;
+    public TextField stepsField;
 
     public Canvas canvas;
 
@@ -47,7 +56,21 @@ public class Controller {
     private final List<Thread> thread = new ArrayList<>();
     private ExecutorService executorService;
 
+    public void setConfig() {
+        Configuration.WIDTH = Integer.parseInt(widthField.getText());
+        Configuration.HEIGHT = Integer.parseInt(heightField.getText());
+        Configuration.N = Integer.parseInt(nField.getText());
+        Configuration.MAX_SPEED = Double.parseDouble(maxSpeedField.getText());
+        Configuration.SIGMA = Double.parseDouble(sigmaField.getText());
+        Configuration.TAU = Double.parseDouble(tauField.getText());
+        Configuration.DT = Double.parseDouble(dtField.getText());
+        Configuration.STEPS = Integer.parseInt(stepsField.getText());
+        Configuration.recalculate();
+    }
+
     public void initialize() {
+
+        setConfig();
 
         ObservableList<String> frameRates = FXCollections.observableArrayList(
                 "120fps",
@@ -59,7 +82,7 @@ public class Controller {
         frameRate.getItems().addAll(frameRates.stream().toList());
         frameRate.setValue(frameRates.get(0));
         frameRate.valueProperty().addListener((newValue) -> {
-            String name = ((ObjectProperty<String>)newValue).getValue().replaceAll("\\D+","");;
+            String name = ((ObjectProperty<String>) newValue).getValue().replaceAll("\\D+", "");
             System.out.println(Integer.parseInt(name));
             UiConfiguration.frameRate = Integer.parseInt(name);
         });
@@ -79,12 +102,18 @@ public class Controller {
         frameSlider.valueProperty().addListener((value) -> {
             frameSlider.setMax(RuntimeConfiguration.maxFrame);
             frameSlider.setMin(0);
-            RuntimeConfiguration.currentFrame = (int) ((DoubleProperty)value).getValue().doubleValue();
+            RuntimeConfiguration.currentFrame = (int) ((DoubleProperty) value).getValue().doubleValue();
         });
 
-        frameButton.pressedProperty().addListener((value) -> {
-            if (((ReadOnlyBooleanProperty)value).getValue()) {
-                UiConfiguration.autoplay = !UiConfiguration.autoplay;
+        Image playImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("play.png")));
+        Image stopImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("pause.png")));
+        frameButton.setOnAction(e -> {
+            Button button = (Button) e.getSource();
+            UiConfiguration.autoplay = !UiConfiguration.autoplay;
+            if (UiConfiguration.autoplay) {
+                button.setGraphic(new ImageView(stopImage));
+            } else {
+                button.setGraphic(new ImageView(playImage));
             }
         });
 
@@ -92,10 +121,14 @@ public class Controller {
     }
 
     public void onCalculateButton() {
+        setConfig();
         thread.forEach(executorService::submit);
+        onFrameButton();
     }
 
     public void onCleanButton() {
+        RuntimeConfiguration.running = false;
+        RuntimeConfiguration.currentFrame = 0;
         if (window != null) {
             window.kill();
             executorService.shutdown();
@@ -206,5 +239,8 @@ public class Controller {
         thread.add(thread3);
     }
 
+    public void onFrameButton() {
+
+    }
 
 }
