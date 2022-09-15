@@ -26,4 +26,8 @@ public class Particle {
         this.ax = ax;
         this.ay = ay;
     }
+
+    public double getKE() {
+        return Math.sqrt(vx * vx + vy * vy) / 2.0;
+    }
 }

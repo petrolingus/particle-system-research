@@ -8,12 +8,11 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane hgap="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="8.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.petrolingus.unn.test.Controller">
+<GridPane hgap="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="8.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.petrolingus.unn.test.Controller">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
       <ColumnConstraints hgrow="SOMETIMES" />
@@ -21,11 +20,12 @@
   <rowConstraints>
     <RowConstraints vgrow="ALWAYS" />
       <RowConstraints vgrow="ALWAYS" />
+      <RowConstraints vgrow="ALWAYS" />
       <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Pane prefHeight="600.0" prefWidth="600.0" style="-fx-border-color: lightgray;" />
+      <Pane fx:id="pane" prefHeight="600.0" prefWidth="600.0" style="-fx-border-color: lightgray;" />
       <StackedAreaChart fx:id="interactionEnergyChart" animated="false" createSymbols="false" maxHeight="256.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
         <xAxis>
           <NumberAxis forceZeroInRange="false" side="BOTTOM" />
@@ -34,8 +34,14 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </StackedAreaChart>
-      <HBox spacing="4.0" GridPane.rowIndex="2" />
-      <HBox spacing="4.0" GridPane.rowIndex="3" />
+      <StackedAreaChart fx:id="kinetic" animated="false" createSymbols="false" maxHeight="256.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+         <xAxis>
+            <NumberAxis forceZeroInRange="false" side="BOTTOM" />
+         </xAxis>
+         <yAxis>
+            <NumberAxis side="LEFT" />
+         </yAxis>
+      </StackedAreaChart>
       <VBox prefWidth="200.0" spacing="4.0" GridPane.columnIndex="1">
          <children>
             <Label maxHeight="1.7976931348623157E308" prefWidth="128.0" text="Epsilon (D)" />
