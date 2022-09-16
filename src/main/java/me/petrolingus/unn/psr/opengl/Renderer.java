@@ -65,7 +65,7 @@ public class Renderer {
                         double y = 1 - particle.y() / (0.5 * Configuration.HEIGHT);
                         int n = 64;
                         double h = 2.0 * Math.PI / (n - 1);
-                        double pointSize = 4 * Configuration.SIGMA / Configuration.WIDTH;
+                        double pointSize = 2.0 * Configuration.particleRadius / Configuration.WIDTH;
                         GL11.glBegin(GL11.GL_POLYGON);
                         for (int i = 0; i < n; i++) {
                             double phi = i  * h;

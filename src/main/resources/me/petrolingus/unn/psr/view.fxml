@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.petrolingus.unn.psr.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.petrolingus.unn.psr.Controller">
    <children>
       <VBox spacing="8.0">
          <children>
@@ -49,13 +49,13 @@
                                     <HBox>
                                        <children>
                                           <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Cell Width (Lx), Å" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="widthField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="30" />
+                                          <TextField fx:id="widthField" disable="true" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="90" />
                                        </children>
                                     </HBox>
                                     <HBox>
                                        <children>
                                           <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Cell Height (Ly), Å" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="heightField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="30" />
+                                          <TextField fx:id="heightField" disable="true" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="30" />
                                        </children>
                                     </HBox>
                                     <Separator prefWidth="200.0" />
@@ -74,14 +74,14 @@
                                     <Separator prefWidth="200.0" />
                                     <HBox>
                                        <children>
-                                          <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sigma (a), Å" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="sigmaField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="3.405" />
+                                          <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sigma (a)" HBox.hgrow="ALWAYS" />
+                                          <TextField fx:id="sigmaField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="0.34032331032" />
                                        </children>
                                     </HBox>
                                     <HBox>
                                        <children>
                                           <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Epsilon (D)" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="epsilonField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="119.8" />
+                                          <TextField fx:id="epsilonField" maxWidth="128.0" minWidth="128.0" prefWidth="128.0" text="0.0103" />
                                        </children>
                                     </HBox>
                                     <Separator prefWidth="200.0" />

@@ -24,7 +24,7 @@ public class Algorithm {
     private void initialize() {
 
         int particleCount = Configuration.N;
-        double particleSize = Configuration.particleSize;
+        double particleSize = Configuration.particleRadius;
         int width = Configuration.WIDTH;
         int height = Configuration.HEIGHT;
 
@@ -39,7 +39,7 @@ public class Algorithm {
                     double dx = p.x - x;
                     double dy = p.y - y;
                     double d = getSquareDistance(dx, dy);
-                    if (d < 2 * particleSize) {
+                    if (d < 2 * Configuration.R0) {
                         isOkay = false;
                         break;
                     }
