@@ -61,11 +61,11 @@ public class Renderer {
                 try {
                     int currentFrame = RuntimeConfiguration.currentFrame;
                     for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
-                        double x = 1 - particle.x() / (0.5 * Configuration.WIDTH);
-                        double y = 1 - particle.y() / (0.5 * Configuration.HEIGHT);
+                        double x = 1.0 - 2.0 * particle.x() / Configuration.WIDTH;
+                        double y = 1.0 - 2.0 * particle.y() / Configuration.HEIGHT;
                         int n = 64;
                         double h = 2.0 * Math.PI / (n - 1);
-                        double pointSize = 2.0 * Configuration.particleRadius / Configuration.WIDTH;
+                        double pointSize = Configuration.R0 / Configuration.WIDTH;
                         GL11.glBegin(GL11.GL_POLYGON);
                         for (int i = 0; i < n; i++) {
                             double phi = i  * h;

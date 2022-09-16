@@ -84,7 +84,9 @@ public class Window {
     }
 
     public void kill() {
-        renderer.kill();
+        if (renderer != null) {
+            renderer.kill();
+        }
         killed = true;
     }
 

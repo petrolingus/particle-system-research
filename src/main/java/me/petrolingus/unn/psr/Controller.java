@@ -29,14 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Controller {
 
-    public TextField widthField;
-    public TextField heightField;
     public TextField nField;
     public TextField maxSpeedField;
     public TextField sigmaField;
     public TextField epsilonField;
     public TextField tauField;
-    public TextField dtField;
     public TextField stepsField;
 
     public Canvas canvas;
@@ -57,22 +54,20 @@ public class Controller {
     private ExecutorService executorService;
 
     public void setConfig() {
-        Configuration.WIDTH = Integer.parseInt(widthField.getText());
-        Configuration.HEIGHT = Integer.parseInt(heightField.getText());
-        Configuration.N = Integer.parseInt(nField.getText());
-        Configuration.MAX_SPEED = Double.parseDouble(maxSpeedField.getText());
-        Configuration.SIGMA = Double.parseDouble(sigmaField.getText());
-        Configuration.TAU = Double.parseDouble(tauField.getText());
-        Configuration.DT = Double.parseDouble(dtField.getText());
-        Configuration.STEPS = Integer.parseInt(stepsField.getText());
+//        Configuration.N = Integer.parseInt(nField.getText());
+//        Configuration.MAX_SPEED = Double.parseDouble(maxSpeedField.getText());
+//        Configuration.SIGMA = Double.parseDouble(sigmaField.getText());
+//        Configuration.EPSILON = Double.parseDouble(epsilonField.getText());
+//        Configuration.TAU = Double.parseDouble(tauField.getText());
+//        Configuration.STEPS = Integer.parseInt(stepsField.getText());
         Configuration.recalculate();
     }
 
     public void initialize() {
 
-        clearSimulationButton.disableProperty().bind(calculateSimulationButton.disableProperty().not());
-
         setConfig();
+
+        clearSimulationButton.disableProperty().bind(calculateSimulationButton.disableProperty().not());
 
         ObservableList<String> frameRates = FXCollections.observableArrayList(
                 "120fps",
