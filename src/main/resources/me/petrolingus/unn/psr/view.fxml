@@ -115,7 +115,7 @@
                   </Button>
                   <ChoiceBox fx:id="frameRate" prefWidth="64.0" />
                   <Label fx:id="frameLabel" alignment="CENTER_RIGHT" contentDisplay="TOP" maxHeight="1.7976931348623157E308" prefWidth="200.0" text="0 / 0" />
-                  <Slider fx:id="frameSlider" maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                  <Slider fx:id="frameSlider" blockIncrement="1.0" maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />

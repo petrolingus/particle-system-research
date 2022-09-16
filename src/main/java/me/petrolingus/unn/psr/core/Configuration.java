@@ -33,19 +33,19 @@ public class Configuration {
 
         // pow(2, 1/6) = 1.12246204831
 
-//        EPSILON = 0.0103; // eV
-//        R0 = 0.382; // nm
-        EPSILON = 119.8; // eV
-        R0 = 3.405 * 1.12246204831; // nm
+        EPSILON = 0.0103; // eV
+        R0 = 0.382; // nm
+//        EPSILON = 119.8; // eV
+//        R0 = 3.405 * 1.12246204831; // nm
 
         A6 = Math.pow(R0, 6);
 
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
-        N = 2;
-        MAX_SPEED = 0;
+        N = 100;
+        MAX_SPEED = 16000000;
 
-        TAU = 1.82e-3; // s
+        TAU = 1.82e-12; // s
         DT = 0.001 * TAU;
         DT2 = DT * DT;
 
