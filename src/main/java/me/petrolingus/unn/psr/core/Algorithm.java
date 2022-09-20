@@ -121,7 +121,9 @@ public class Algorithm {
                 Particle b = particles.get(j);
                 double dx = a.x - b.x;
                 double dy = a.y - b.y;
-                double r = getSquareDistance(dx, dy, width, height);
+                dx = (Math.abs(dx) > 0.5 * width) ? dx - width * Math.signum(dx) : dx;
+                dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
+                double r = dx * dx + dy * dy;
 
                 double force = 12.0 * D * a6 * (a6 / Math.pow(r, 3) - 1.0) / Math.pow(r, 4);
 
@@ -169,7 +171,7 @@ public class Algorithm {
         int steps = Configuration.STEPS;
         Timer.start("GENERATION_ANIMATION");
         for (int i = 0; i < steps; i++) {
-            if (i % 100 == 0) {
+            if (i % 1 == 0) {
                 List<ParticleData> data = new ArrayList<>(particleCount);
                 for (Particle particle : particles) {
                     data.add(new ParticleData(particle.x, particle.y));
