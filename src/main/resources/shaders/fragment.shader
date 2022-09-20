@@ -26,7 +26,7 @@ void main()
     vec2 iResolution = vec2(size, size);
     vec2 uv = gl_FragCoord.xy;
     vec2 center = iResolution.xy * pos;
-    float radius = scale * iResolution.y;
+    float radius = scale * iResolution.y / 2.0;
 
     vec3 red = rgb(225.0, 95.0, 60.0);
     vec4 layer2 = circle(uv, center, radius, red);
