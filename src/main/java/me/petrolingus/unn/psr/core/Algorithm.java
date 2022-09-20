@@ -50,7 +50,7 @@ public class Algorithm {
             }
 
             double maxSpeed = Configuration.MAX_SPEED;
-            double speed = ThreadLocalRandom.current().nextDouble(0, maxSpeed);
+            double speed = ThreadLocalRandom.current().nextDouble(maxSpeed);
             double direction = ThreadLocalRandom.current().nextDouble(2 * Math.PI);
             double vx = speed * Math.cos(direction);
             double vy = speed * Math.sin(direction);
@@ -96,6 +96,7 @@ public class Algorithm {
         double width = Configuration.WIDTH;
         double height = Configuration.HEIGHT;
         double m = 66.3352146e-27;
+        double c = 12.0 * D * a6;
 
         for (Particle a : particles) {
             double newX = a.x + a.vx * dt + 0.5 * a.ax * dt2 / m;
@@ -125,12 +126,18 @@ public class Algorithm {
                 dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
                 double r = dx * dx + dy * dy;
 
-                double force = 12.0 * D * a6 * (a6 / Math.pow(r, 3) - 1.0) / Math.pow(r, 4);
+                double r2 = r * r;
+                double r3 = r * r2;
+                double r4 = r2 * r2;
 
-                a.ax += force * dx;
-                a.ay += force * dy;
-                b.ax -= force * dx;
-                b.ay -= force * dy;
+                double force = c * (a6 / r3 - 1.0) / r4;
+                double fx = force * dx;
+                double fy = force * dy;
+
+                a.ax += fx;
+                a.ay += fy;
+                b.ax -= fx;
+                b.ay -= fy;
 
             }
         }
@@ -177,6 +184,7 @@ public class Algorithm {
                     data.add(new ParticleData(particle.x, particle.y));
                 }
                 particleData.add(data);
+                averageKineticEnergyList.add(getAverageKineticEnergy());
             }
             run();
         }

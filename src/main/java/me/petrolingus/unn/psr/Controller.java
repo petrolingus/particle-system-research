@@ -216,20 +216,20 @@ public class Controller {
                     throw new RuntimeException(e);
                 }
             }
-//            Platform.runLater(() -> {
-//                List<Double> averageKineticEnergyList = Algorithm.getAverageKineticEnergyList();
-//                XYChart.Series<Number, Number> series = new XYChart.Series<>();
-//                int maxPoints = 1000;
-//                int step = averageKineticEnergyList.size() / maxPoints;
-//                for (int i = 0; i < maxPoints; i += step) {
-//                    int currentFrame = i * step;
-//                    series.getData().add(new XYChart.Data<>(currentFrame, averageKineticEnergyList.get(currentFrame)));
-//                }
-//                if (chart.getData() != null) {
-//                    chart.getData().clear();
-//                }
-//                chart.getData().add(series);
-//            });
+            Platform.runLater(() -> {
+                List<Double> averageKineticEnergyList = Algorithm.getAverageKineticEnergyList();
+                XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                int maxPoints = 10_000;
+                int step = averageKineticEnergyList.size() / maxPoints;
+                for (int i = 0; i < maxPoints; i += step) {
+                    int currentFrame = i * step;
+                    series.getData().add(new XYChart.Data<>(currentFrame, averageKineticEnergyList.get(currentFrame)));
+                }
+                if (chart.getData() != null) {
+                    chart.getData().clear();
+                }
+                chart.getData().add(series);
+            });
         });
 
         thread.add(thread0);

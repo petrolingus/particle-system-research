@@ -43,10 +43,10 @@ public class Configuration {
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
         N = 100;
-        MAX_SPEED = 16000000;
+        MAX_SPEED = 300e9;
 
         TAU = 1.82e-12; // s
-        DT = 0.001 * TAU;
+        DT = 0.01 * TAU;
         DT2 = DT * DT;
 
         STEPS = 100_000;
