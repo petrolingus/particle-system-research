@@ -6,8 +6,12 @@ import me.petrolingus.unn.psr.core.ParticleData;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Renderer {
 
@@ -35,17 +39,43 @@ public class Renderer {
         algorithm = new Algorithm();
         algorithm.start();
 
-//        float pointSize = (float) (width * Configuration.particleSize / Configuration.WIDTH);
-
         GL.createCapabilities();
-//        GL11.glViewport(0, 0, 720, 720);
-        GL11.glDisable (GL11.GL_POINT_SMOOTH);
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL11.glPointSize(400);
+        GL11.glClearColor(0.82f, 0.87f, 0.89f, 0.0f);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         buffer = BufferUtils.createByteBuffer(width * height * 4);
     }
 
-    void loop() {
+    void loop() throws Exception {
+
+        String vertexShaderPath = "src/main/resources/shaders/vertex.shader";
+        String fragmentShaderPath = "src/main/resources/shaders/fragment.shader";
+        ShaderProgram shaderProgram = new ShaderProgram(vertexShaderPath, fragmentShaderPath);
+        shaderProgram.createUniform("size");
+        shaderProgram.createUniform("scale");
+
+        float[] vertices = {
+                1.0f, 1.0f, 0.0f,
+                1.0f, -1.0f, 0.0f,
+                -1.0f, -1.0f, 0.0f,
+                -1.0f, 1.0f, 0.0f,
+        };
+        int[] indices = {
+                0, 1, 3,
+                1, 2, 3
+        };
+        Mesh mesh = new Mesh(vertices, indices);
+
+        // Create FloatBuffer
+        float[] positions = new float[3 * Configuration.N];
+        int positionsLength = positions.length;
+        for (int i = 0; i < positionsLength; i++) {
+            positions[i] = (float) (ThreadLocalRandom.current().nextDouble());
+            positions[i] = 0.5f;
+        }
+        FloatBuffer positionsFloatBuffer = MemoryUtil.memAllocFloat(positionsLength);
+        positionsFloatBuffer.put(positions).flip();
+        mesh.bufferDataUpdate(positionsFloatBuffer);
 
         double FPS_TARGET = 120;
         double FRAME_TIME_TARGET = 1000.0 / FPS_TARGET;
@@ -58,28 +88,21 @@ public class Renderer {
             long frameStop = System.currentTimeMillis();
             if (frameStop - frameStart > FRAME_TIME_TARGET) {
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-                try {
-                    int currentFrame = RuntimeConfiguration.currentFrame;
-                    for (ParticleData particle : algorithm.getParticleData(currentFrame)) {
-                        double x = 1.0 - 2.0 * particle.x() / Configuration.WIDTH;
-                        double y = 1.0 - 2.0 * particle.y() / Configuration.HEIGHT;
-                        int n = 64;
-                        double h = 2.0 * Math.PI / (n - 1);
-                        double pointSize = Configuration.R0 / Configuration.WIDTH;
-                        GL11.glBegin(GL11.GL_POLYGON);
-                        for (int i = 0; i < n; i++) {
-                            double phi = i  * h;
-                            double xx = pointSize * Math.cos(phi);
-                            double yy = pointSize * Math.sin(phi);
-                            GL11.glVertex2d(xx + x, yy + y);
-                        }
-                        GL11.glEnd();
 
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                List<ParticleData> particleData = algorithm.getParticleData(RuntimeConfiguration.currentFrame);
+                for (int i = 0; i < particleData.size(); i++) {
+                    positions[3 * i] = (float) (particleData.get(i).x() / Configuration.WIDTH);
+                    positions[3 * i + 1] = (float) (particleData.get(i).y()/ Configuration.WIDTH);
                 }
+                positionsFloatBuffer.put(positions).flip();
+                mesh.bufferDataUpdate(positionsFloatBuffer);
+
+                shaderProgram.bind();
+                shaderProgram.setUniform("size", 704);
+                shaderProgram.setUniform("scale", (float) (Configuration.R0 / Configuration.WIDTH));
+                mesh.drawInstances(Configuration.N);
+                shaderProgram.unbind();
+
                 GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
                 frameStart = frameStop;
             }

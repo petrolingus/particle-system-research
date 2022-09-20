@@ -62,22 +62,6 @@ public class ShaderProgram {
         GL30.glAttachShader(programId, shaderId);
     }
 
-    public void createBufferUniform(String bufferName) throws Exception {
-        int example = GL31.glGetUniformBlockIndex(programId, "Example");
-        if (example < 0) {
-            throw new Exception("Could not find uniform:" + bufferName);
-        }
-        uniforms.put(bufferName, example);
-    }
-
-    public void bindBuffer(String bufferName) {
-        GL31.glUniformBlockBinding(programId, uniforms.get(bufferName), 0);
-    }
-
-    public void setBufferData() {
-
-    }
-
     public void createUniform(String uniformName) throws Exception {
         int uniformLocation = GL30.glGetUniformLocation(programId, uniformName);
         if (uniformLocation < 0) {
@@ -88,20 +72,6 @@ public class ShaderProgram {
 
     public void setUniform(String uniformName, float value) {
         GL30.glUniform1f(uniforms.get(uniformName), value);
-    }
-
-//    public void setUniform(String uniformName, Vector3f value) {
-//        GL30.glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
-//    }
-//
-//    public void setUniform(String uniformName, Matrix4f value) {
-//        try (MemoryStack stack = MemoryStack.stackPush()) {
-//            GL30.glUniformMatrix4fv(uniforms.get(uniformName), false, value.get(stack.mallocFloat(16)));
-//        }
-//    }
-
-    public void setUniform(String uniformName, float[] value) {
-        glUniform1fv(uniforms.get(uniformName), value);
     }
 
     public void bind() {
