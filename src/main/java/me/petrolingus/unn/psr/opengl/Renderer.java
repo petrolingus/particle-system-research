@@ -2,7 +2,9 @@ package me.petrolingus.unn.psr.opengl;
 
 import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.core.Configuration;
+import me.petrolingus.unn.psr.core.Particle;
 import me.petrolingus.unn.psr.core.ParticleData;
+import me.petrolingus.unn.psr.core.generator.ParticleGenerator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
@@ -36,7 +38,8 @@ public class Renderer {
 
     private void initialize() {
 
-        algorithm = new Algorithm();
+        ParticleGenerator particleGenerator = new ParticleGenerator();
+        algorithm = new Algorithm(particleGenerator);
         algorithm.start();
 
         GL.createCapabilities();
@@ -89,10 +92,10 @@ public class Renderer {
             if (frameStop - frameStart > FRAME_TIME_TARGET) {
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-                List<ParticleData> particleData = algorithm.getParticleData(RuntimeConfiguration.currentFrame);
-                for (int i = 0; i < particleData.size(); i++) {
-                    positions[3 * i] = (float) (particleData.get(i).x() / Configuration.WIDTH);
-                    positions[3 * i + 1] = (float) (particleData.get(i).y()/ Configuration.WIDTH);
+                Particle[] particleData = algorithm.getParticleData(RuntimeConfiguration.currentFrame);
+                for (int i = 0; i < particleData.length; i++) {
+                    positions[3 * i] = (float) (particleData[i].x / Configuration.WIDTH);
+                    positions[3 * i + 1] = (float) (particleData[i].y / Configuration.WIDTH);
                 }
                 positionsFloatBuffer.put(positions).flip();
                 mesh.bufferDataUpdate(positionsFloatBuffer);

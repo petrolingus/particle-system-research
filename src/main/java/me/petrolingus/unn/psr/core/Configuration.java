@@ -44,14 +44,14 @@ public class Configuration {
 
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
-        N = 100;
-        MAX_SPEED = 600; // nm/ns
+        N = 400;
+        MAX_SPEED = 0.001; // nm/ns
 
         TAU = 1.82e-3; // ns
-        DT = 0.01 * TAU;
+        DT = 0.001 * TAU;
         DT2 = DT * DT;
 
-        STEPS = 200_000;
+        STEPS = 100_000;
 
         M = 66.3352146e-27;
         K = 1.380649e-23; // J/Kelvin

@@ -1,15 +1,21 @@
 package me.petrolingus.unn.psr.core;
 
+import me.petrolingus.unn.psr.core.generator.ParticleGenerator;
+
 public class Test {
 
     public static void main(String[] args) {
 
         Configuration.recalculate();
-        Algorithm algorithm = new Algorithm();
+        ParticleGenerator particleGenerator = new ParticleGenerator();
+        Algorithm algorithm = new Algorithm(particleGenerator);
+        algorithm.start();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             System.out.println(i + ":");
-            algorithm.particles.forEach(System.out::println);
+            for (Particle particle : algorithm.getParticleData(i)) {
+                System.out.println(particle);
+            }
             System.out.println("===================================");
         }
 
