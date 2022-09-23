@@ -17,6 +17,10 @@ public class Configuration {
     public static double DT2;
 
     public static int STEPS;
+    public static double M;
+
+    public static double K;
+    public static double eV;
 
     public static double PARTICLE_RADIUS;
 
@@ -33,23 +37,25 @@ public class Configuration {
 
         // pow(2, 1/6) = 1.12246204831
 
-        EPSILON = 0.0103; // eV
+        EPSILON = 0.0103 * 1.602176634e-19; // eV
         R0 = 0.382; // nm
-//        EPSILON = 119.8; // eV
-//        R0 = 3.405 * 1.12246204831; // nm
 
         A6 = Math.pow(R0, 6);
 
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
         N = 100;
-        MAX_SPEED = 300e9;
+        MAX_SPEED = 600; // nm/ns
 
-        TAU = 1.82e-12; // s
+        TAU = 1.82e-3; // ns
         DT = 0.01 * TAU;
         DT2 = DT * DT;
 
-        STEPS = 100_000;
+        STEPS = 200_000;
+
+        M = 66.3352146e-27;
+        K = 1.380649e-23; // J/Kelvin
+        eV = 1.602176634e-19;
     }
 
 }

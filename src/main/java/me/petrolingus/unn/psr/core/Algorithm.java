@@ -8,14 +8,18 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Algorithm {
 
-    private double beginKineticEnergy = -1;
-
     private static boolean done = false;
 
     List<Particle> particles = new ArrayList<>();
 
     public static List<Double> averageKineticEnergyList = new ArrayList<>();
+    public static List<Double> kineticEnergyList = new ArrayList<>();
+    public static List<Double> potentialEnergyList = new ArrayList<>();
     List<List<ParticleData>> particleData = new ArrayList<>();
+
+    private double vvsum = 0;
+    private double ke = 0;
+    private double pe = 0;
 
     public Algorithm() {
         initialize();
@@ -95,7 +99,7 @@ public class Algorithm {
         double D = Configuration.EPSILON;
         double width = Configuration.WIDTH;
         double height = Configuration.HEIGHT;
-        double m = 66.3352146e-27;
+        double m = Configuration.M;
         double c = 12.0 * D * a6;
 
         for (Particle a : particles) {
@@ -129,10 +133,14 @@ public class Algorithm {
                 double r2 = r * r;
                 double r3 = r * r2;
                 double r4 = r2 * r2;
+                double r6 = r3 * r3;
 
                 double force = c * (a6 / r3 - 1.0) / r4;
                 double fx = force * dx;
                 double fy = force * dy;
+
+                double c2 = a6 / r6;
+                pe += D * c2 * (c2 - 2);
 
                 a.ax += fx;
                 a.ay += fy;
@@ -146,6 +154,12 @@ public class Algorithm {
             a.vx += 0.5 * a.ax * dt / m;
             a.vy += 0.5 * a.ay * dt / m;
         }
+
+        for (Particle a : particles) {
+            double k = Configuration.M * (a.vx * a.vx + a.vy * a.vy) / 2.0;
+            vvsum += k;
+            ke += k;
+        }
     }
 
     public double getSquareDistance(double dx, double dy, double width, double height) {
@@ -154,15 +168,17 @@ public class Algorithm {
         return dx * dx + dy * dy;
     }
 
-    public double getAverageKineticEnergy() {
-        double averageKineticEnergy = 0;
-        for (Particle a : particles) {
-            averageKineticEnergy += (a.vx * a.vx + a.vy * a.vy) / 2.0;
-        }
-        if (beginKineticEnergy == -1) {
-            beginKineticEnergy = averageKineticEnergy;
-        }
-        return averageKineticEnergy;
+    public double getKineticEnergy(int steps) {
+        return ke / steps;
+    }
+
+    public double getPotentialEnergy(int steps) {
+        return pe / steps;
+    }
+
+    public double getAverageKineticEnergy(int steps) {
+        double averageKineticEnergy = vvsum / steps;
+        return averageKineticEnergy / (Configuration.N * Configuration.K);
     }
 
     public double[] periodic(double x, double y, double width, double height) {
@@ -184,7 +200,11 @@ public class Algorithm {
                     data.add(new ParticleData(particle.x, particle.y));
                 }
                 particleData.add(data);
-                averageKineticEnergyList.add(getAverageKineticEnergy());
+                if (i > 50000) {
+                    potentialEnergyList.add(getPotentialEnergy(i));
+                    kineticEnergyList.add(getKineticEnergy(i));
+                    averageKineticEnergyList.add(getAverageKineticEnergy(i));
+                }
             }
             run();
         }
@@ -199,6 +219,14 @@ public class Algorithm {
 
     public static List<Double> getAverageKineticEnergyList() {
         return averageKineticEnergyList;
+    }
+
+    public static List<Double> getKineticEnergyList() {
+        return kineticEnergyList;
+    }
+
+    public static List<Double> getPotentialEnergyList() {
+        return potentialEnergyList;
     }
 
     public static boolean isDone() {

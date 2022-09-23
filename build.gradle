@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'de.gsi.chart:chartfx-chart:11.2.6'
+
     implementation platform("org.lwjgl:lwjgl-bom:3.3.1")
 
     implementation "org.lwjgl:lwjgl"
@@ -21,6 +23,7 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl-glfw::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl-opengl::natives-windows"
+
 }
 
 application {

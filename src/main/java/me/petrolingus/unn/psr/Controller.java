@@ -1,5 +1,9 @@
 package me.petrolingus.unn.psr;
 
+import de.gsi.chart.axes.spi.DefaultNumericAxis;
+import de.gsi.chart.renderer.ErrorStyle;
+import de.gsi.chart.renderer.spi.ErrorDataSetRenderer;
+import de.gsi.dataset.spi.DoubleDataSet;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -7,10 +11,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.core.Configuration;
@@ -20,6 +23,8 @@ import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
 import me.petrolingus.unn.psr.opengl.Window;
 
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,13 +42,14 @@ public class Controller {
     public TextField stepsField;
 
     public Canvas canvas;
+    public Pane chartPane;
 
     public Button frameButton;
     public ChoiceBox<String> frameRate;
     public Label frameLabel;
     public Slider frameSlider;
 
-    public LineChart<Number, Number> chart;
+    public de.gsi.chart.XYChart chart2;
 
     public Button calculateSimulationButton;
     public Button clearSimulationButton;
@@ -64,6 +70,17 @@ public class Controller {
     }
 
     public void initialize() {
+
+        chart2 = new de.gsi.chart.XYChart(new DefaultNumericAxis(), new DefaultNumericAxis());
+        chart2.setAnimated(false);
+        chartPane.getChildren().add(chart2);
+
+        final ErrorDataSetRenderer errorRenderer = new ErrorDataSetRenderer();
+        chart2.getRenderers().setAll(errorRenderer);
+        errorRenderer.setErrorType(ErrorStyle.NONE);
+        errorRenderer.setDrawMarker(false);
+        // example how to set the specific color of the dataset
+        // dataSetNoError.setStyle("strokeColor=cyan; fillColor=darkgreen");
 
         setConfig();
 
@@ -217,18 +234,33 @@ public class Controller {
                 }
             }
             Platform.runLater(() -> {
-                List<Double> averageKineticEnergyList = Algorithm.getAverageKineticEnergyList();
-                XYChart.Series<Number, Number> series = new XYChart.Series<>();
-                int maxPoints = 10_000;
-                int step = averageKineticEnergyList.size() / maxPoints;
-                for (int i = 0; i < maxPoints; i += step) {
-                    int currentFrame = i * step;
-                    series.getData().add(new XYChart.Data<>(currentFrame, averageKineticEnergyList.get(currentFrame)));
+
+                final DoubleDataSet kineticEnergyDataSet = new DoubleDataSet("KE");
+                final DoubleDataSet potentialEnergyDataSet = new DoubleDataSet("PE");
+                final DoubleDataSet sumEnergyDataSet = new DoubleDataSet("E");
+                chart2.getDatasets().addAll(sumEnergyDataSet);
+
+                List<Double> kineticEnergyList = Algorithm.getKineticEnergyList();
+                List<Double> potentialEnergyList = Algorithm.getPotentialEnergyList();
+                int n = kineticEnergyList.size();
+                final double[] xValues = new double[n];
+                final double[] yValues = new double[n];
+//                final double[] yValues2 = new double[n];
+                for (int i = 0; i < n; i++) {
+                    xValues[i] = i;
+                    yValues[i] = kineticEnergyList.get(i) + potentialEnergyList.get(i);
+//                    yValues2[i] = potentialEnergyList.get(i);
                 }
-                if (chart.getData() != null) {
-                    chart.getData().clear();
-                }
-                chart.getData().add(series);
+                sumEnergyDataSet.set(xValues, yValues);
+//                kineticEnergyDataSet.set(xValues, yValues);
+//                potentialEnergyDataSet.set(xValues, yValues2);
+
+//                final ContourDataSetRenderer contourChartRenderer = new ContourDataSetRenderer();
+//                contourChartRenderer.setSmooth(true);
+//                contourChartRenderer.setComputeLocalRange(false);
+//                contourChartRenderer.setColorGradient(ColorGradient.PINK);
+//                contourChartRenderer.getDatasets().add(dataSet);
+//                chart2.getRenderers().add(contourChartRenderer);
             });
         });
 

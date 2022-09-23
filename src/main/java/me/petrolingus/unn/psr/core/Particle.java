@@ -29,4 +29,16 @@ public class Particle {
         y = (y > 1) ? (y - 1) : y;
         y = (y < 0) ? (1 + y) : y;
     }
+
+    @Override
+    public String toString() {
+        return "Particle{" +
+                "x=" + x +
+                ", y=" + y +
+                ", vx=" + vx +
+                ", vy=" + vy +
+                ", ax=" + ax +
+                ", ay=" + ay +
+                '}';
+    }
 }
