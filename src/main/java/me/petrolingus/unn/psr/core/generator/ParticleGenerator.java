@@ -61,7 +61,7 @@ public class ParticleGenerator {
                 }
             }
 
-            double speed = ThreadLocalRandom.current().nextDouble(MAX_SPEED);
+            double speed = MAX_SPEED > 0 ? ThreadLocalRandom.current().nextDouble(MAX_SPEED) : 0;
             double direction = ThreadLocalRandom.current().nextDouble(TWO_PI);
             double vx = speed * Math.cos(direction);
             double vy = speed * Math.sin(direction);

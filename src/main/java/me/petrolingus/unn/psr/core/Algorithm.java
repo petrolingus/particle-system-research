@@ -3,24 +3,14 @@ package me.petrolingus.unn.psr.core;
 import me.petrolingus.unn.psr.core.generator.ParticleGenerator;
 import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Algorithm {
-
-    private static boolean done = false;
-
-    public static List<Double> kineticEnergyList = new ArrayList<>();
-    public static List<Double> potentialEnergyList = new ArrayList<>();
+public class Algorithm extends DefaultAlgorithm {
 
     private final Particle[][] particles;
-    private double ke;
-    private double pe;
 
     public Algorithm(ParticleGenerator generator) {
         this.particles = generator.generate();
-        this.ke = 0;
-        this.pe = 0;
     }
 
     public void run(int k) {
@@ -47,10 +37,10 @@ public class Algorithm {
             particles[k + 1][i].vy = particles[k][i].vy + 0.5 * particles[k][i].ay * dt / m;
         }
 
-//        for (int i = 0; i < particleCount; i++) {
-//            particles[k + 1][i].ax = 0;
-//            particles[k + 1][i].ay = 0;
-//        }
+        for (int i = 0; i < particleCount; i++) {
+            particles[k + 1][i].ax = 0;
+            particles[k + 1][i].ay = 0;
+        }
 
         for (int i = 0; i < particleCount; i++) {
             Particle a = particles[k][i];
@@ -65,25 +55,21 @@ public class Algorithm {
                 double r2 = r * r;
                 double r3 = r * r2;
                 double r4 = r2 * r2;
-//                double r6 = r3 * r3;
 
                 double force = c * (a6 / r3 - 1.0) / r4;
                 double fx = force * dx;
                 double fy = force * dy;
 
-//                double c2 = a6 / r6;
-//                pe += D * c2 * (c2 - 2);
-
-                particles[k][i].ax += fx;
-                particles[k][i].ay += fy;
-                particles[k][j].ax -= fx;
-                particles[k][j].ay -= fy;
+                particles[k + 1][i].ax += fx;
+                particles[k + 1][i].ay += fy;
+                particles[k + 1][j].ax -= fx;
+                particles[k + 1][j].ay -= fy;
             }
         }
 
         for (int i = 0; i < particleCount; i++) {
-            particles[k + 1][i].vx += + 0.5 * particles[k][i].ax * dt / m;
-            particles[k + 1][i].vy += + 0.5 * particles[k][i].ay * dt / m;
+            particles[k + 1][i].vx += +0.5 * particles[k + 1][i].ax * dt / m;
+            particles[k + 1][i].vy += +0.5 * particles[k + 1][i].ay * dt / m;
         }
 //
 //        for (Particle a : particles) {
@@ -93,28 +79,24 @@ public class Algorithm {
 //        }
     }
 
-    public double getSquareDistance(double dx, double dy, double width, double height) {
-        dx = (Math.abs(dx) > 0.5 * width) ? dx - width * Math.signum(dx) : dx;
-        dy = (Math.abs(dy) > 0.5 * height) ? dy - height * Math.signum(dy) : dy;
-        return dx * dx + dy * dy;
+    public double getAverageKineticEnergy(int i) {
+        double averageKineticEnergy = 0;
+        for (Particle a : particles[i]) {
+            averageKineticEnergy += (a.vx * a.vx + a.vy * a.vy);
+        }
+        averageKineticEnergy = Configuration.M * averageKineticEnergy * 0.5 / (Configuration.K * Configuration.N);
+        return averageKineticEnergy;
     }
 
-    public double getKineticEnergy(int steps) {
-        return ke / steps;
-    }
-
-    public double getPotentialEnergy(int steps) {
-        return pe / steps;
-    }
-
-
-
+    @Override
     public void start() {
 
-        int particleCount = Configuration.N;
         final int STEPS = Configuration.STEPS;
         Timer.start("GENERATION_ANIMATION");
         for (int i = 0; i < STEPS - 1; i++) {
+            if (i > 50_000) {
+                temperatureList.add(getAverageKineticEnergy(i));
+            }
             run(i);
         }
         RuntimeConfiguration.maxFrame = STEPS;
@@ -122,19 +104,7 @@ public class Algorithm {
         done = true;
     }
 
-    public Particle[] getParticleData(int index) {
-        return particles[index];
-    }
-
-    public static List<Double> getKineticEnergyList() {
-        return kineticEnergyList;
-    }
-
-    public static List<Double> getPotentialEnergyList() {
-        return potentialEnergyList;
-    }
-
-    public static boolean isDone() {
-        return done;
+    public List<Particle> getParticleData(int index) {
+        return List.of(particles[index]);
     }
 }

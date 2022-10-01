@@ -2,7 +2,9 @@ package me.petrolingus.unn.psr;
 
 import de.gsi.chart.axes.spi.DefaultNumericAxis;
 import de.gsi.chart.renderer.ErrorStyle;
+import de.gsi.chart.renderer.spi.ContourDataSetRenderer;
 import de.gsi.chart.renderer.spi.ErrorDataSetRenderer;
+import de.gsi.chart.renderer.spi.utils.ColorGradient;
 import de.gsi.dataset.spi.DoubleDataSet;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -17,6 +19,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import me.petrolingus.unn.psr.core.Algorithm;
 import me.petrolingus.unn.psr.core.Configuration;
+import me.petrolingus.unn.psr.core.DefaultAlgorithm;
+import me.petrolingus.unn.psr.core.OldAlgorithm;
 import me.petrolingus.unn.psr.core.ui.FrameController;
 import me.petrolingus.unn.psr.core.ui.UiConfiguration;
 import me.petrolingus.unn.psr.opengl.RuntimeConfiguration;
@@ -43,6 +47,8 @@ public class Controller {
 
     public Canvas canvas;
     public Pane chartPane;
+    public de.gsi.chart.XYChart temperatureChart;
+    public Pane temperaturePane;
 
     public Button frameButton;
     public ChoiceBox<String> frameRate;
@@ -81,6 +87,15 @@ public class Controller {
         errorRenderer.setDrawMarker(false);
         // example how to set the specific color of the dataset
         // dataSetNoError.setStyle("strokeColor=cyan; fillColor=darkgreen");
+
+        temperatureChart = new de.gsi.chart.XYChart(new DefaultNumericAxis(), new DefaultNumericAxis());
+        temperatureChart.setAnimated(false);
+        temperaturePane.getChildren().add(temperatureChart);
+
+        final ErrorDataSetRenderer errorRenderer2 = new ErrorDataSetRenderer();
+        temperatureChart.getRenderers().setAll(errorRenderer2);
+        errorRenderer2.setErrorType(ErrorStyle.NONE);
+        errorRenderer2.setDrawMarker(false);
 
         setConfig();
 
@@ -226,7 +241,7 @@ public class Controller {
         });
 
         Thread thread3 = new Thread(() -> {
-            while (!Algorithm.isDone()) {
+            while (!OldAlgorithm.isDone()) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
@@ -235,31 +250,30 @@ public class Controller {
             }
             Platform.runLater(() -> {
 
-                final DoubleDataSet kineticEnergyDataSet = new DoubleDataSet("KE");
-                final DoubleDataSet potentialEnergyDataSet = new DoubleDataSet("PE");
-                final DoubleDataSet sumEnergyDataSet = new DoubleDataSet("E");
-                chart2.getDatasets().addAll(sumEnergyDataSet);
+                setDataSet(chart2, DefaultAlgorithm.getKineticEnergyList(), "Kinetic Energy");
+                setDataSet(chart2, DefaultAlgorithm.getPotentialEnergyList(), "Potential Energy");
+                setDataSet(chart2, DefaultAlgorithm.getFullEnergyList(), "Full Energy");
 
-                List<Double> kineticEnergyList = Algorithm.getKineticEnergyList();
-                List<Double> potentialEnergyList = Algorithm.getPotentialEnergyList();
-                int n = kineticEnergyList.size();
-                final double[] xValues = new double[n];
-                final double[] yValues = new double[n];
-//                final double[] yValues2 = new double[n];
-                for (int i = 0; i < n; i++) {
-                    xValues[i] = i;
-                    yValues[i] = kineticEnergyList.get(i) + potentialEnergyList.get(i);
-//                    yValues2[i] = potentialEnergyList.get(i);
-                }
-                sumEnergyDataSet.set(xValues, yValues);
+                setDataSet(temperatureChart, DefaultAlgorithm.getTemperatureList(), "Temperature");
+
+//                final DoubleDataSet kineticEnergyDataSet = new DoubleDataSet("KE");
+//                chart2.getDatasets().addAll(kineticEnergyDataSet);
+//
+//                List<Double> kineticEnergyList = DefaultAlgorithm.getPotentialEnergyList();
+//                int n = kineticEnergyList.size();
+//                final double[] xValues = new double[n];
+//                final double[] yValues = new double[n];
+//                for (int i = 0; i < n; i++) {
+//                    xValues[i] = i;
+//                    yValues[i] = kineticEnergyList.get(i);
+//                }
 //                kineticEnergyDataSet.set(xValues, yValues);
-//                potentialEnergyDataSet.set(xValues, yValues2);
 
 //                final ContourDataSetRenderer contourChartRenderer = new ContourDataSetRenderer();
 //                contourChartRenderer.setSmooth(true);
 //                contourChartRenderer.setComputeLocalRange(false);
 //                contourChartRenderer.setColorGradient(ColorGradient.PINK);
-//                contourChartRenderer.getDatasets().add(dataSet);
+//                contourChartRenderer.getDatasets().add(kineticEnergyDataSet);
 //                chart2.getRenderers().add(contourChartRenderer);
             });
         });
@@ -268,6 +282,20 @@ public class Controller {
         thread.add(thread1);
         thread.add(thread2);
         thread.add(thread3);
+    }
+
+    private void setDataSet(de.gsi.chart.XYChart chart, List<Double> data, String name) {
+        final DoubleDataSet dataSet = new DoubleDataSet(name);
+        chart.getDatasets().addAll(dataSet);
+
+        int n = data.size();
+        final double[] xValues = new double[n];
+        final double[] yValues = new double[n];
+        for (int i = 0; i < n; i++) {
+            xValues[i] = i;
+            yValues[i] = data.get(i);
+        }
+        dataSet.set(xValues, yValues);
     }
 
     public void onFrameButton() {

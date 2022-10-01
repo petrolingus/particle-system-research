@@ -24,6 +24,8 @@ public class Configuration {
 
     public static double PARTICLE_RADIUS;
 
+    public static double C;
+
     public static void recalculate() {
 //        R0 = Math.pow(2, 1.0 / 6.0) * SIGMA;
 //        A6 = Math.pow(R0, 6);
@@ -44,11 +46,11 @@ public class Configuration {
 
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
-        N = 400;
-        MAX_SPEED = 0.001; // nm/ns
+        N = 100;
+        MAX_SPEED = 450; // nm/ns
 
         TAU = 1.82e-3; // ns
-        DT = 0.001 * TAU;
+        DT = 0.01 * TAU;
         DT2 = DT * DT;
 
         STEPS = 100_000;
@@ -56,6 +58,13 @@ public class Configuration {
         M = 66.3352146e-27;
         K = 1.380649e-23; // J/Kelvin
         eV = 1.602176634e-19;
+        C = 12.0 * EPSILON * A6;
+
+//        TAU = 1.82e-12; // ns
+//        DT = 0.01 * TAU;
+//        DT2 = DT * DT;
+//        EPSILON = 0.0103;
+//        MAX_SPEED = 300e9;
     }
 
 }
