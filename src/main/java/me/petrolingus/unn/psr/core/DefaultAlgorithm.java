@@ -11,6 +11,13 @@ public abstract class DefaultAlgorithm {
     static List<Double> potentialEnergyList = new ArrayList<>();
     static List<Double> kineticEnergyList = new ArrayList<>();
     static List<Double> fullEnergyList = new ArrayList<>();
+    static List<Particle> particleList = new ArrayList<>();
+
+    static int step = 0;
+    static double potential = 0;
+    static double kinetic = 0;
+    static double full = 0;
+    static double temperature = 0;
 
     public static List<Double> getTemperatureList() {
         return temperatureList;
@@ -28,6 +35,14 @@ public abstract class DefaultAlgorithm {
         return fullEnergyList;
     }
 
+    public static List<Particle> getParticles() {
+        return particleList;
+    }
+
+    public static void stop() {
+        step = 0;
+    }
+
     public abstract void start();
 
     public abstract List<Particle> getParticleData(int index);
@@ -35,4 +50,22 @@ public abstract class DefaultAlgorithm {
     public static boolean isDone() {
         return done;
     }
+
+    public static int getStep() {
+        return step;
+    }
+
+    public static double getCurrentTemperature() {
+        return temperature;
+    }
+
+    public static double getCurrentPotential() {
+        return potential;
+    }
+
+    public static double getCurrentKinetic() {
+        return kinetic;
+    }
+
+
 }

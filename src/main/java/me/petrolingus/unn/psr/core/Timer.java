@@ -3,9 +3,13 @@ package me.petrolingus.unn.psr.core;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Timer {
+public final class Timer {
 
-    private static Map<String, Long> map = new HashMap<>();
+    private static final Map<String, Long> map = new HashMap<>();
+
+    private Timer() {
+
+    }
 
     public static void start(String name) {
         map.put(name, System.currentTimeMillis());

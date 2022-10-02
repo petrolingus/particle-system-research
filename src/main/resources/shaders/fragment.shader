@@ -4,7 +4,8 @@ in vec2 pos;
 
 out vec4 fragColor;
 
-uniform float size;
+uniform float width;
+uniform float height;
 uniform float scale;
 
 vec3 rgb(float r, float g, float b) {
@@ -14,8 +15,8 @@ vec3 rgb(float r, float g, float b) {
 vec4 circle(vec2 uv, vec2 center, float rad, vec3 color) {
     float dx = uv.x - center.x;
     float dy = uv.y - center.y;
-    dx = (abs(dx) > 0.5 * size) ? dx - size * sign(dx) : dx;
-    dy = (abs(dy) > 0.5 * size) ? dy - size * sign(dy) : dy;
+    dx = (abs(dx) > 0.5 * width) ? dx - width * sign(dx) : dx;
+    dy = (abs(dy) > 0.5 * height) ? dy - height * sign(dy) : dy;
     float d = sqrt(dx * dx + dy * dy) - rad;
     float t = clamp(d, 0.0, 1.0);
     return vec4(color, 1.0 - t);
@@ -23,7 +24,7 @@ vec4 circle(vec2 uv, vec2 center, float rad, vec3 color) {
 
 void main()
 {
-    vec2 iResolution = vec2(size, size);
+    vec2 iResolution = vec2(width, height);
     vec2 uv = gl_FragCoord.xy;
     vec2 center = iResolution.xy * pos;
     float radius = scale * iResolution.y / 2.0;

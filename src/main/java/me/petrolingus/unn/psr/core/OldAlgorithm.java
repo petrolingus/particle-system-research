@@ -16,6 +16,7 @@ public class OldAlgorithm extends DefaultAlgorithm {
 
     public OldAlgorithm(ParticleGenerator generator) {
         this.particles = List.of(generator.generate()[0]);
+        temperature = getTemperature();
     }
 
     private void step(double dt, double dt2, int n, double a6, double w, double h, double m, double c) {
@@ -84,6 +85,32 @@ public class OldAlgorithm extends DefaultAlgorithm {
         return averageKineticEnergy;
     }
 
+    public void next() {
+
+        double dt = Configuration.DT;
+        double dt2 = Configuration.DT2;
+        int n = Configuration.N;
+        double a6 = Configuration.A6;
+        double w = Configuration.WIDTH;
+        double h = Configuration.HEIGHT;
+        double m = Configuration.M;
+        double c = Configuration.C;
+        int steps = Configuration.STEPS;
+
+        step(dt, dt2, n, a6, w, h, m, c);
+
+        pe /= (n * Configuration.eV);
+        ke /= (n * Configuration.eV);
+
+        potential = pe;
+        pe = 0;
+
+        kinetic = ke;
+        ke = 0;
+
+        step++;
+    }
+
     @Override
     public void start() {
 
@@ -128,7 +155,13 @@ public class OldAlgorithm extends DefaultAlgorithm {
         DefaultAlgorithm.done = true;
     }
 
+    public void snapshot() {
+        particleList = particles.subList(0, particles.size());
+        temperature = getTemperature();
+    }
+
     public List<Particle> getParticleData(int index) {
         return particleData.get(index);
     }
+
 }
