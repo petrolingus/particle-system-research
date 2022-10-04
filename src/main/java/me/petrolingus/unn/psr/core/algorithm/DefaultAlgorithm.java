@@ -72,7 +72,9 @@ public class DefaultAlgorithm extends Algorithm {
 
         // Calculate kinetic energy of particle system in Joules
         for (Particle a : particles) {
-            ke += 0.5 * Configuration.M * (a.vx * a.vx + a.vy * a.vy) / Configuration.eV;
+            double v2 = a.vx * a.vx + a.vy * a.vy;
+            ke += 0.5 * Configuration.M * v2 / Configuration.eV;
+            a.mv2 += Configuration.M * v2;
         }
     }
 
@@ -87,6 +89,16 @@ public class DefaultAlgorithm extends Algorithm {
         double c = Configuration.C;
         step(dt, dt2, n, a6, w, h, m, c);
         step++;
+
+        if (step < Configuration.T_MAX_STEPS && step % Configuration.T_RECALCULATE_VELOCITY_STEP == 0) {
+            double temp = particles.stream().mapToDouble(e -> e.mv2 / Configuration.T_RECALCULATE_VELOCITY_STEP).sum();
+            double beta = Math.sqrt(2.0 * n * Configuration.K * Configuration.INIT_T / temp);
+            for (Particle p : particles) {
+                p.vx *= beta;
+                p.vy *= beta;
+                p.mv2 = 0;
+            }
+        }
     }
 
     public void snapshot() {

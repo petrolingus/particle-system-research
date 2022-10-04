@@ -3,6 +3,7 @@ package me.petrolingus.unn.psr.controller;
 import de.gsi.chart.XYChart;
 import de.gsi.chart.axes.spi.DefaultNumericAxis;
 import de.gsi.chart.renderer.ErrorStyle;
+import de.gsi.chart.renderer.LineStyle;
 import de.gsi.chart.renderer.spi.ErrorDataSetRenderer;
 import de.gsi.dataset.spi.DoubleDataSet;
 import javafx.scene.layout.StackPane;
@@ -27,6 +28,8 @@ public class ChartController {
     public void initializeTemperatureChart() {
         XYChart temperatureChart = charts.get(ChartTypes.TEMPERATURE_CHART);
         final DoubleDataSet temperatureDataSet = new DoubleDataSet("Temperature");
+        temperatureDataSet.setStyle("strokeWidth=1");
+        temperatureChart.getDatasets().clear();
         temperatureChart.getDatasets().setAll(temperatureDataSet);
 
         XYChart energyChart = charts.get(ChartTypes.ENERGY_CHART);
@@ -36,22 +39,20 @@ public class ChartController {
         energyChart.getDatasets().setAll(kineticEnergyDataSet, potentialEnergyDataSet, fullEnergyDataSet);
 
         executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(() -> {
+        executor.scheduleWithFixedDelay(() -> {
             double x = Algorithm.getStep();
-//            if (x > 0) {
-                double temperature = Algorithm.getCurrentTemperature();
-                temperatureDataSet.add(x, temperature);
+//                double temperature = Algorithm.getCurrentTemperature();
+//                temperatureDataSet.add(x, temperature);
 //
-                double kinetic = Algorithm.getCurrentKinetic();
-                kineticEnergyDataSet.add(x, kinetic);
-
-                double potential = Algorithm.getCurrentPotential();
-                potentialEnergyDataSet.add(x, potential);
-
-                double full = Algorithm.getCurrentFull();
-                fullEnergyDataSet.add(x, full);
-//            }
-        }, 0, 32, TimeUnit.MILLISECONDS);
+//                double kinetic = Algorithm.getCurrentKinetic();
+//                kineticEnergyDataSet.add(x, kinetic);
+//
+//                double potential = Algorithm.getCurrentPotential();
+//                potentialEnergyDataSet.add(x, potential);
+//
+//                double full = Algorithm.getCurrentFull();
+//                fullEnergyDataSet.add(x, full);
+        }, 0, 16, TimeUnit.MILLISECONDS);
     }
 
     public void stop() {
@@ -68,6 +69,8 @@ public class ChartController {
         chart.getRenderers().setAll(errorRenderer);
         errorRenderer.setErrorType(ErrorStyle.NONE);
         errorRenderer.setDrawMarker(false);
+        errorRenderer.setPointReduction(true);
+        errorRenderer.setMinRequiredReductionSize(10);
 
         return chart;
     }

@@ -9,6 +9,8 @@ public class Particle {
     public double ax;
     public double ay;
 
+    public double mv2;
+
     public Particle() {
         this(0, 0, 0, 0);
     }
@@ -20,6 +22,7 @@ public class Particle {
         this.vy = vy;
         this.ax = 0;
         this.ay = 0;
+        this.mv2 = 0;
     }
 
     public void periodic(double width, double height) {
