@@ -2,7 +2,6 @@ package me.petrolingus.unn.psr.controller;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import me.petrolingus.unn.psr.core.Configuration;
 
 public class UiController {
 
