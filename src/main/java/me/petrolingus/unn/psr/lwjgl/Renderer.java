@@ -1,16 +1,12 @@
 package me.petrolingus.unn.psr.lwjgl;
 
-import me.petrolingus.unn.psr.controller.AlgorithmController;
 import me.petrolingus.unn.psr.core.Configuration;
-import me.petrolingus.unn.psr.core.DefaultAlgorithm;
-import me.petrolingus.unn.psr.core.OldAlgorithm;
-import me.petrolingus.unn.psr.core.Particle;
-import me.petrolingus.unn.psr.core.generator.ParticleGenerator;
-import me.petrolingus.unn.psr.opengl.Mesh;
-import me.petrolingus.unn.psr.opengl.ShaderProgram;
+import me.petrolingus.unn.psr.core.algorithm.Algorithm;
+import me.petrolingus.unn.psr.core.model.Particle;
+import me.petrolingus.unn.psr.lwjgl.mesh.Mesh;
+import me.petrolingus.unn.psr.lwjgl.shader.ShaderProgram;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -18,15 +14,13 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
 
-    private int width;
+    private final int width;
 
-    private int height;
+    private final int height;
 
     private long window;
 
@@ -42,12 +36,7 @@ public class Renderer {
         System.out.println("Buffer Size:" + buffer);
     }
 
-    public void run() throws Exception {
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
+    public void run() {
         GL.createCapabilities();
 
         // Set the clear color
@@ -72,19 +61,20 @@ public class Renderer {
         return isRunning;
     }
 
-    private void loop() throws Exception {
+    private void loop() {
 
-//        Configuration.recalculate();
-//        ParticleGenerator particleGenerator = new ParticleGenerator();
-//        OldAlgorithm algorithm = new OldAlgorithm(particleGenerator);
-//        algorithm.next();
+        ShaderProgram shaderProgram = null;
+        try {
+            String vertexShaderPath = "src/main/resources/shaders/vertex.shader";
+            String fragmentShaderPath = "src/main/resources/shaders/fragment.shader";
+            shaderProgram = new ShaderProgram(vertexShaderPath, fragmentShaderPath);
+            shaderProgram.createUniform("width");
+            shaderProgram.createUniform("height");
+            shaderProgram.createUniform("scale");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        String vertexShaderPath = "src/main/resources/shaders/vertex.shader";
-        String fragmentShaderPath = "src/main/resources/shaders/fragment.shader";
-        ShaderProgram shaderProgram = new ShaderProgram(vertexShaderPath, fragmentShaderPath);
-        shaderProgram.createUniform("width");
-        shaderProgram.createUniform("height");
-        shaderProgram.createUniform("scale");
 
         float[] vertices = {
                 1.0f, 1.0f, 0.0f,
@@ -120,7 +110,7 @@ public class Renderer {
             if (frameStop - frameStart > FRAME_TIME_TARGET) {
                 glClear(GL_COLOR_BUFFER_BIT);
 
-                List<Particle> particles = DefaultAlgorithm.getParticles();
+                List<Particle> particles = Algorithm.getParticles();
                 for (int i = 0; i < particles.size(); i++) {
                     positions[3 * i] = (float) (particles.get(i).x / Configuration.WIDTH);
                     positions[3 * i + 1] = (float) (particles.get(i).y / Configuration.WIDTH);
@@ -142,6 +132,5 @@ public class Renderer {
             }
         }
     }
-
 
 }

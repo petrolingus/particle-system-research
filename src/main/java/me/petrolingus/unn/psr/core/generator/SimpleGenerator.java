@@ -1,7 +1,7 @@
 package me.petrolingus.unn.psr.core.generator;
 
 import me.petrolingus.unn.psr.core.Configuration;
-import me.petrolingus.unn.psr.core.Particle;
+import me.petrolingus.unn.psr.core.model.Particle;
 
 public class SimpleGenerator {
 

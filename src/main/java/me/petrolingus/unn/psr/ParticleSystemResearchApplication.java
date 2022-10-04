@@ -13,7 +13,7 @@ public class ParticleSystemResearchApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(ParticleSystemResearchApplication.class.getResource("new_view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ParticleSystemResearchApplication.class.getResource("view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("Investigation of the simple transport properties of a particle system");
         primaryStage.setResizable(true);

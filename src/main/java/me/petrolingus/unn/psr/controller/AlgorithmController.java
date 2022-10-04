@@ -3,8 +3,8 @@ package me.petrolingus.unn.psr.controller;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import me.petrolingus.unn.psr.core.Configuration;
-import me.petrolingus.unn.psr.core.DefaultAlgorithm;
-import me.petrolingus.unn.psr.core.OldAlgorithm;
+import me.petrolingus.unn.psr.core.algorithm.Algorithm;
+import me.petrolingus.unn.psr.core.algorithm.DefaultAlgorithm;
 import me.petrolingus.unn.psr.core.generator.ParticleGenerator;
 
 import java.util.concurrent.Executors;
@@ -15,9 +15,7 @@ public class AlgorithmController {
 
     private Label stepsLabel;
 
-    private boolean isRunning = false;
-
-    private OldAlgorithm algorithm;
+    private DefaultAlgorithm algorithm;
 
     public AlgorithmController() {
         Configuration.recalculate();
@@ -25,32 +23,24 @@ public class AlgorithmController {
 
     public void run() {
         ParticleGenerator particleGenerator = new ParticleGenerator();
-        this.algorithm = new OldAlgorithm(particleGenerator);
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        this.algorithm = new DefaultAlgorithm(particleGenerator);
+//        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
         executor.scheduleWithFixedDelay(() -> {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < Configuration.NSNAP; i++) {
                 algorithm.next();
             }
             algorithm.snapshot();
         }, 0, 1, TimeUnit.MILLISECONDS);
         executor.scheduleWithFixedDelay(() -> {
             Platform.runLater(() -> {
-                stepsLabel.setText("Steps: " + DefaultAlgorithm.getStep());
+                stepsLabel.setText("Steps: " + Algorithm.getStep());
             });
         }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     public void stop() {
         algorithm = null;
-        DefaultAlgorithm.stop();
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void setRunning(boolean running) {
-        isRunning = running;
     }
 
     public void setStepsLabel(Label stepsLabel) {

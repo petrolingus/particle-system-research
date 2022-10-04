@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -15,9 +16,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
-    private int width;
+    private final int width;
 
-    private int height;
+    private final int height;
 
     private long window;
 
@@ -31,11 +32,7 @@ public class Window {
     public void run()  {
 
         initialize();
-        try {
-            loop();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        loop();
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -43,7 +40,7 @@ public class Window {
 
         // Terminate GLFW and free the error callback
         glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
 
     public void stop() {
@@ -111,7 +108,7 @@ public class Window {
         renderer = new Renderer(width, height, window);
     }
 
-    private void loop() throws Exception {
+    private void loop() {
         renderer.run();
     }
 }

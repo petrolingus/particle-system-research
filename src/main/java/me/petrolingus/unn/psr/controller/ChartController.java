@@ -6,7 +6,7 @@ import de.gsi.chart.renderer.ErrorStyle;
 import de.gsi.chart.renderer.spi.ErrorDataSetRenderer;
 import de.gsi.dataset.spi.DoubleDataSet;
 import javafx.scene.layout.StackPane;
-import me.petrolingus.unn.psr.core.DefaultAlgorithm;
+import me.petrolingus.unn.psr.core.algorithm.Algorithm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,19 +37,20 @@ public class ChartController {
 
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(() -> {
-            double x = DefaultAlgorithm.getStep();
-            if (x > 0) {
-                double temperature = DefaultAlgorithm.getCurrentTemperature();
+            double x = Algorithm.getStep();
+//            if (x > 0) {
+                double temperature = Algorithm.getCurrentTemperature();
                 temperatureDataSet.add(x, temperature);
-
-                double kinetic = DefaultAlgorithm.getCurrentKinetic();
+//
+                double kinetic = Algorithm.getCurrentKinetic();
                 kineticEnergyDataSet.add(x, kinetic);
 
-                double potential = DefaultAlgorithm.getCurrentPotential();
+                double potential = Algorithm.getCurrentPotential();
                 potentialEnergyDataSet.add(x, potential);
 
-                fullEnergyDataSet.add(x, kinetic + potential);
-            }
+                double full = Algorithm.getCurrentFull();
+                fullEnergyDataSet.add(x, full);
+//            }
         }, 0, 32, TimeUnit.MILLISECONDS);
     }
 

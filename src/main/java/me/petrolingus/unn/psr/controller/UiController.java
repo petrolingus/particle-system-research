@@ -33,14 +33,14 @@ public class UiController {
 
     public void onStartButton() {
         canvasController.run();
-        chartController.initializeTemperatureChart();
         algorithmController.run();
+        chartController.initializeTemperatureChart();
     }
 
     public void onStopButton() {
-        canvasController.stop();
         chartController.stop();
         algorithmController.stop();
+        canvasController.stop();
     }
 
 }

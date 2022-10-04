@@ -1,4 +1,4 @@
-package me.petrolingus.unn.psr.opengl;
+package me.petrolingus.unn.psr.lwjgl.mesh;
 
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33C;
