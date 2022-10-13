@@ -14,8 +14,9 @@ public abstract class Algorithm {
     static double kinetic = 0;
     static double potential = 0;
     static double full = 0;
-
     static double temperature = 0;
+
+    public static List<Double> temperatureList = new ArrayList<>();
 
     public static List<Particle> getParticles() {
         return particleList;
@@ -40,7 +41,6 @@ public abstract class Algorithm {
     public static double getCurrentFull() {
         return full;
     }
-
 
     public static void stop() {
         step = 0;

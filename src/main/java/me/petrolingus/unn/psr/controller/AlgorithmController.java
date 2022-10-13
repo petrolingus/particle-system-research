@@ -24,13 +24,8 @@ public class AlgorithmController {
     public void run() {
         ParticleGenerator particleGenerator = new ParticleGenerator();
         this.algorithm = new DefaultAlgorithm(particleGenerator);
-//        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
         executor.scheduleWithFixedDelay(() -> {
-//            if (DefaultAlgorithm.getStep() > Configuration.STEPS) {
-//                executor.shutdown();
-//                stop();
-//            }
             for (int i = 0; i < Configuration.NSNAP; i++) {
                 algorithm.next();
             }

@@ -3,10 +3,11 @@ package me.petrolingus.unn.psr.controller;
 import de.gsi.chart.XYChart;
 import de.gsi.chart.axes.spi.DefaultNumericAxis;
 import de.gsi.chart.renderer.ErrorStyle;
-import de.gsi.chart.renderer.LineStyle;
 import de.gsi.chart.renderer.spi.ErrorDataSetRenderer;
 import de.gsi.dataset.spi.DoubleDataSet;
 import javafx.scene.layout.StackPane;
+import jdk.jshell.execution.JdiInitiator;
+import me.petrolingus.unn.psr.core.Timer;
 import me.petrolingus.unn.psr.core.algorithm.Algorithm;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ChartController {
 
@@ -38,21 +40,48 @@ public class ChartController {
         final DoubleDataSet fullEnergyDataSet = new DoubleDataSet("Full Energy");
         energyChart.getDatasets().setAll(kineticEnergyDataSet, potentialEnergyDataSet, fullEnergyDataSet);
 
+        AtomicLong start = new AtomicLong(System.nanoTime());
+
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(() -> {
             double x = Algorithm.getStep();
-//                double temperature = Algorithm.getCurrentTemperature();
-//                temperatureDataSet.add(x, temperature);
-//
-//                double kinetic = Algorithm.getCurrentKinetic();
-//                kineticEnergyDataSet.add(x, kinetic);
-//
-//                double potential = Algorithm.getCurrentPotential();
-//                potentialEnergyDataSet.add(x, potential);
-//
-//                double full = Algorithm.getCurrentFull();
-//                fullEnergyDataSet.add(x, full);
-        }, 0, 16, TimeUnit.MILLISECONDS);
+
+            long s = System.nanoTime();
+
+            double kinetic = Algorithm.getCurrentKinetic();
+            kineticEnergyDataSet.add(x, kinetic);
+
+            double potential = Algorithm.getCurrentPotential();
+            potentialEnergyDataSet.add(x, potential);
+
+            double full = Algorithm.getCurrentFull();
+            fullEnergyDataSet.add(x, full);
+
+            int size = Algorithm.temperatureList.size();
+            int n = size - temperatureDataSet.getDataCount();
+            double[] xis = new double[n];
+            double[] yis = new double[n];
+            for (int i = temperatureDataSet.getDataCount(); i < size; i++) {
+                xis[i] = i;
+                yis[i] = Algorithm.temperatureList.get(i);
+            }
+            temperatureDataSet.set(xis, yis);
+
+//            System.out.println(Algorithm.temperatureList.get(Algorithm.temperatureList.size() - 1));
+
+//            double temperature = Algorithm.getCurrentTemperature();
+//            temperatureDataSet.add(x, temperature);
+
+            long e = System.nanoTime();
+
+            long stop = System.nanoTime();
+            long diff = stop - start.get();
+
+//            if (diff > 1_000_000_000) {
+//                System.out.println("Diff: " + ((e - s) / 1_000_000.0));
+//                start.set(stop);
+//            }
+        }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     public void stop() {
@@ -69,8 +98,6 @@ public class ChartController {
         chart.getRenderers().setAll(errorRenderer);
         errorRenderer.setErrorType(ErrorStyle.NONE);
         errorRenderer.setDrawMarker(false);
-        errorRenderer.setPointReduction(true);
-        errorRenderer.setMinRequiredReductionSize(10);
 
         return chart;
     }

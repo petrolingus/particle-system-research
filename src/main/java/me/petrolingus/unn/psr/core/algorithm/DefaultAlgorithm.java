@@ -109,6 +109,8 @@ public class DefaultAlgorithm extends Algorithm {
         full = (pe + ke) / (Configuration.N * Configuration.NSNAP);
         temperature = (ke * Configuration.eV) / (Configuration.N * Configuration.NSNAP * Configuration.K);
 
+        temperatureList.add(temperature);
+
         pe = 0;
         ke = 0;
     }

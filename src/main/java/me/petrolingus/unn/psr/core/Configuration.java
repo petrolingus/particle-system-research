@@ -52,7 +52,7 @@ public class Configuration {
         eV = 1.602176634e-19;
         C = 12.0 * EPSILON * A6;
 
-        NSNAP = 4;
+        NSNAP = 10;
 
         // Перенормировка скоростей
         T_MAX_STEPS = 50000;
