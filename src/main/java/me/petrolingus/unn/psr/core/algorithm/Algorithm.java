@@ -18,6 +18,8 @@ public abstract class Algorithm {
 
     public static List<Double> temperatureList = new ArrayList<>();
 
+    public static List<Double> rList = new ArrayList<>();
+
     public static List<Particle> getParticles() {
         return particleList;
     }

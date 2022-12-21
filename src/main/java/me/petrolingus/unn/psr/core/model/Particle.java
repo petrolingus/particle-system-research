@@ -2,6 +2,9 @@ package me.petrolingus.unn.psr.core.model;
 
 public class Particle {
 
+    private double oldX;
+    private double oldY;
+
     public double x;
     public double y;
     public double vx;
@@ -30,5 +33,18 @@ public class Particle {
         x = (x > width) ? (x - width) : x;
         y = (y < 0) ? (y + height) : y;
         y = (y > height) ? (y - height) : y;
+    }
+
+    public void saveCurrentPosition() {
+        oldX = x;
+        oldY = y;
+    }
+
+    public double getDistanceDifference(double w, double h) {
+        double dx = oldX - x;
+        double dy = oldY - y;
+        dx = (Math.abs(dx) > 0.5 * w) ? dx - w * Math.signum(dx) : dx;
+        dy = (Math.abs(dy) > 0.5 * h) ? dy - h * Math.signum(dy) : dy;
+        return Math.abs(dx * dx + dy * dy);
     }
 }

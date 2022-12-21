@@ -99,6 +99,13 @@ public class DefaultAlgorithm extends Algorithm {
                 p.mv2 = 0;
             }
         }
+        if (step == Configuration.FIRST_SAVE) {
+            particles.forEach(Particle::saveCurrentPosition);
+        }
+        if (step > Configuration.FIRST_SAVE && step % Configuration.CALCULATE_EVERY_STEPS == 0) {
+            double v = particles.stream().mapToDouble(p -> p.getDistanceDifference(w, h)).average().orElse(-1);
+            rList.add(v);
+        }
     }
 
     public void snapshot() {

@@ -30,6 +30,9 @@ public class Configuration {
     public static double T_MAX_STEPS;
     public static double T_RECALCULATE_VELOCITY_STEP;
 
+    public static int FIRST_SAVE;
+    public static int CALCULATE_EVERY_STEPS;
+
     public static void recalculate() {
         EPSILON = 0.0103 * 1.602176634e-19; // eV
         R0 = 0.382; // nm
@@ -57,8 +60,12 @@ public class Configuration {
         // Перенормировка скоростей
         T_MAX_STEPS = 50000;
         T_RECALCULATE_VELOCITY_STEP = 10;
-        INIT_T = 10;
+        INIT_T = 100;
         MAX_SPEED = Math.sqrt(2.0 * K * INIT_T / M); // 0.5mv^2 = nkT;
+
+        // Вычисление коэфициента самодиффуззии
+        FIRST_SAVE = 50_000;
+        CALCULATE_EVERY_STEPS = 200;
     }
 
 }
