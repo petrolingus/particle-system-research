@@ -27,7 +27,7 @@ public class Configuration {
     public static int NSNAP;
 
     public static double INIT_T;
-    public static double T_MAX_STEPS;
+    public static int T_MAX_STEPS;
     public static double T_RECALCULATE_VELOCITY_STEP;
 
     public static int FIRST_SAVE;
@@ -42,7 +42,6 @@ public class Configuration {
         WIDTH = HEIGHT = 30.0 * R0; // nm
 
         N = 100;
-        MAX_SPEED = 300; // m/s
 
         TAU = 1.82e-3; // ns
         DT = 0.01 * TAU;
@@ -58,13 +57,13 @@ public class Configuration {
         NSNAP = 10;
 
         // Перенормировка скоростей
-        T_MAX_STEPS = 50000;
-        T_RECALCULATE_VELOCITY_STEP = 10;
+        T_MAX_STEPS = 50_000;
+        T_RECALCULATE_VELOCITY_STEP = 100;
         INIT_T = 100;
         MAX_SPEED = Math.sqrt(2.0 * K * INIT_T / M); // 0.5mv^2 = nkT;
 
         // Вычисление коэфициента самодиффуззии
-        FIRST_SAVE = 50_000;
+        FIRST_SAVE = T_MAX_STEPS + 5_000;
         CALCULATE_EVERY_STEPS = 200;
     }
 

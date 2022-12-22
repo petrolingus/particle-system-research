@@ -45,6 +45,6 @@ public class Particle {
         double dy = oldY - y;
         dx = (Math.abs(dx) > 0.5 * w) ? dx - w * Math.signum(dx) : dx;
         dy = (Math.abs(dy) > 0.5 * h) ? dy - h * Math.signum(dy) : dy;
-        return Math.abs(dx * dx + dy * dy);
+        return dx * dx + dy * dy;
     }
 }

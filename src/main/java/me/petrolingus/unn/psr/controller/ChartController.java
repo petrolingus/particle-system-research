@@ -10,6 +10,7 @@ import jdk.jshell.execution.JdiInitiator;
 import me.petrolingus.unn.psr.core.Configuration;
 import me.petrolingus.unn.psr.core.Timer;
 import me.petrolingus.unn.psr.core.algorithm.Algorithm;
+import me.petrolingus.unn.psr.core.algorithm.ShiftData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,13 +48,10 @@ public class ChartController {
         selfChart.getDatasets().clear();
         selfChart.getDatasets().setAll(selfDataSet);
 
-        AtomicLong start = new AtomicLong(System.nanoTime());
-
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(() -> {
-            double x = Algorithm.getStep();
 
-            long s = System.nanoTime();
+            double x = Algorithm.getStep();
 
             double kinetic = Algorithm.getCurrentKinetic();
             kineticEnergyDataSet.add(x, kinetic);
@@ -64,38 +62,20 @@ public class ChartController {
             double full = Algorithm.getCurrentFull();
             fullEnergyDataSet.add(x, full);
 
-//            int size = Algorithm.temperatureList.size();
-//            int n = size - temperatureDataSet.getDataCount();
-//            double[] xis = new double[n];
-//            double[] yis = new double[n];
-//            for (int i = temperatureDataSet.getDataCount(); i < size; i++) {
-//                xis[i] = i;
-//                yis[i] = Algorithm.temperatureList.get(i);
-//            }
-//            temperatureDataSet.set(xis, yis);
-
-//            System.out.println(Algorithm.temperatureList.get(Algorithm.temperatureList.size() - 1));
-
             double temperature = Algorithm.getCurrentTemperature();
             temperatureDataSet.add(x, temperature);
 
-            if (selfDataSet.getDataCount() > 0) {
-                selfDataSet.clearData();
-            }
-            for (int i = 0; i < Algorithm.rList.size(); i++) {
-                selfDataSet.add(i, Algorithm.rList.get(i));
-            }
-
-
-//            long e = System.nanoTime();
-
-//            long stop = System.nanoTime();
-//            long diff = stop - start.get();
-
-//            if (diff > 1_000_000_000) {
-//                System.out.println("Diff: " + ((e - s) / 1_000_000.0));
-//                start.set(stop);
+//            if (selfDataSet.getDataCount() > 0) {
+//                selfDataSet.clearData();
 //            }
+            while (true) {
+                ShiftData shiftData = Algorithm.rList.poll();
+                if (shiftData == null) {
+                    break;
+                } else {
+                    selfDataSet.add(shiftData.getT(), shiftData.getValue());
+                }
+            }
         }, 0, 300, TimeUnit.MILLISECONDS);
     }
 

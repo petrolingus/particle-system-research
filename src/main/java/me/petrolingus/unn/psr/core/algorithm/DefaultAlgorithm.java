@@ -14,7 +14,7 @@ public class DefaultAlgorithm extends Algorithm {
     double ke;
 
     public DefaultAlgorithm(ParticleGenerator generator) {
-        this.particles = List.of(generator.generate()[0]);
+        this.particles = generator.generate();
         step = 0;
     }
 
@@ -88,7 +88,6 @@ public class DefaultAlgorithm extends Algorithm {
         double m = Configuration.M;
         double c = Configuration.C;
         step(dt, dt2, n, a6, w, h, m, c);
-        step++;
 
         if (step < Configuration.T_MAX_STEPS && step % Configuration.T_RECALCULATE_VELOCITY_STEP == 0) {
             double temp = particles.stream().mapToDouble(e -> e.mv2 / Configuration.T_RECALCULATE_VELOCITY_STEP).sum();
@@ -99,24 +98,25 @@ public class DefaultAlgorithm extends Algorithm {
                 p.mv2 = 0;
             }
         }
-        if (step == Configuration.FIRST_SAVE) {
-            particles.forEach(Particle::saveCurrentPosition);
-        }
-        if (step > Configuration.FIRST_SAVE && step % Configuration.CALCULATE_EVERY_STEPS == 0) {
-            double v = particles.stream().mapToDouble(p -> p.getDistanceDifference(w, h)).average().orElse(-1);
-            rList.add(v);
-        }
+//        if (step == Configuration.FIRST_SAVE) {
+//            particles.forEach(Particle::saveCurrentPosition);
+//        }
+//        if (step > Configuration.FIRST_SAVE && step % Configuration.CALCULATE_EVERY_STEPS == 0) {
+//            int t = step - Configuration.FIRST_SAVE;
+//            double v = particles.stream().mapToDouble(p -> p.getDistanceDifference(w, h)).average().orElse(-1);
+//            rList.offer(new ShiftData(t, v));
+//        }
+
+        step++;
     }
 
     public void snapshot() {
-        particleList = particles.subList(0, particles.size());
+//        particleList = particles.subList(0, particles.size());
 
         potential = pe / (Configuration.N * Configuration.NSNAP);
         kinetic = ke / (Configuration.N * Configuration.NSNAP);
         full = (pe + ke) / (Configuration.N * Configuration.NSNAP);
         temperature = (ke * Configuration.eV) / (Configuration.N * Configuration.NSNAP * Configuration.K);
-
-        temperatureList.add(temperature);
 
         pe = 0;
         ke = 0;

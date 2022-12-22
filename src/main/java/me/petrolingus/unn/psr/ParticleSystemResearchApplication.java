@@ -17,8 +17,6 @@ public class ParticleSystemResearchApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("Investigation of the simple transport properties of a particle system");
         primaryStage.setResizable(true);
-//        primaryStage.setMaximized(true);
-//        primaryStage.setFullScreen(true);
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.showingProperty().addListener((observable, oldValue, newValue) -> System.exit(0));

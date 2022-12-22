@@ -2,8 +2,11 @@ package me.petrolingus.unn.psr.core.algorithm;
 
 import me.petrolingus.unn.psr.core.model.Particle;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public abstract class Algorithm {
 
@@ -18,7 +21,7 @@ public abstract class Algorithm {
 
     public static List<Double> temperatureList = new ArrayList<>();
 
-    public static List<Double> rList = new ArrayList<>();
+    public static Queue<ShiftData> rList = new ArrayDeque<>();
 
     public static List<Particle> getParticles() {
         return particleList;
