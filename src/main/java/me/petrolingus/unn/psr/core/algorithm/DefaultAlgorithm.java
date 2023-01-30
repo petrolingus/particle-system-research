@@ -21,8 +21,9 @@ public class DefaultAlgorithm extends Algorithm {
     private void step(double dt, double dt2, int n, double a6, double w, double h, double m, double c) {
 
         for (Particle a : particles) {
-            a.x += a.vx * dt + 0.5 * a.ax * dt2 / m;
-            a.y += a.vy * dt + 0.5 * a.ay * dt2 / m;
+            double dx = a.vx * dt + 0.5 * a.ax * dt2 / m;
+            double dy = a.vy * dt + 0.5 * a.ay * dt2 / m;
+            a.move(dx, dy);
             a.periodic(w, h);
         }
 
@@ -88,6 +89,7 @@ public class DefaultAlgorithm extends Algorithm {
         double m = Configuration.M;
         double c = Configuration.C;
         step(dt, dt2, n, a6, w, h, m, c);
+        step++;
 
         if (step < Configuration.T_MAX_STEPS && step % Configuration.T_RECALCULATE_VELOCITY_STEP == 0) {
             double temp = particles.stream().mapToDouble(e -> e.mv2 / Configuration.T_RECALCULATE_VELOCITY_STEP).sum();
@@ -98,20 +100,18 @@ public class DefaultAlgorithm extends Algorithm {
                 p.mv2 = 0;
             }
         }
-//        if (step == Configuration.FIRST_SAVE) {
-//            particles.forEach(Particle::saveCurrentPosition);
-//        }
-//        if (step > Configuration.FIRST_SAVE && step % Configuration.CALCULATE_EVERY_STEPS == 0) {
-//            int t = step - Configuration.FIRST_SAVE;
-//            double v = particles.stream().mapToDouble(p -> p.getDistanceDifference(w, h)).average().orElse(-1);
-//            rList.offer(new ShiftData(t, v));
-//        }
-
-        step++;
+        if (step == Configuration.FIRST_SAVE) {
+            particles.forEach(Particle::saveCurrentPosition);
+        }
+        if (step > Configuration.FIRST_SAVE && step % Configuration.CALCULATE_EVERY_STEPS == 0) {
+            int t = step - Configuration.FIRST_SAVE;
+            double v = particles.stream().mapToDouble(p -> p.getDistanceDifference(w, h)).average().orElse(-1);
+            rList.offer(new ShiftData(t, v));
+        }
     }
 
     public void snapshot() {
-//        particleList = particles.subList(0, particles.size());
+        particleList = particles.subList(0, particles.size());
 
         potential = pe / (Configuration.N * Configuration.NSNAP);
         kinetic = ke / (Configuration.N * Configuration.NSNAP);

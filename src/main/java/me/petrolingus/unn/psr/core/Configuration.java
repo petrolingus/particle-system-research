@@ -63,7 +63,7 @@ public class Configuration {
         MAX_SPEED = Math.sqrt(2.0 * K * INIT_T / M); // 0.5mv^2 = nkT;
 
         // Вычисление коэфициента самодиффуззии
-        FIRST_SAVE = T_MAX_STEPS + 5_000;
+        FIRST_SAVE = T_MAX_STEPS + 1;
         CALCULATE_EVERY_STEPS = 200;
     }
 
